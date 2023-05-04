@@ -18,10 +18,11 @@ private:
     int data_size;
     int weight_size;
     int output_size;
-    int *hidden_Layer; // tableau de couches cachées
-    int hidden_Layer_size;
+    int hidden_Layer; // tableau de couches cachées
     MatrixXd image;
     MatrixXd weight_matrix;
+    MatrixXd data_matrix;
+    int neurons;
     double sum;
 
 public:
@@ -30,12 +31,17 @@ public:
     double activation();
     double tanh(double x);
     double perceptron();
-    void flatten(MatrixXd mat);
+    void flatten();
     void display_matrix();
     void setWeight();
     void displayWeight();
     void displaySum();
     void set_Data();
     void display_data();
+    void set_matrix_weight();
+    void display_matrix_weight();
+    void set_matrix_data();
+    void set_hidden_layer();
+    void display_dataMatrix();
     //~Multilayer();
 };
