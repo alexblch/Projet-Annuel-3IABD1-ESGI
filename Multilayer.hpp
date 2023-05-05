@@ -12,7 +12,7 @@ class Multilayer
 {
 private:
     vector <double>data;   // tableau de données
-    double *weight; // tableau de poids
+    vector <float>weight; // tableau de poids
     double bias;    // tableau de biais
     double *output; // tableau de sortie
     int data_size;
@@ -24,9 +24,10 @@ private:
     MatrixXd data_matrix;
     int neurons;
     double sum;
+    double out;
 
 public:
-    Multilayer(int data_size, int weight_size, int bias, int output_size, MatrixXd image);
+    Multilayer(int data_size, int bias, int output_size, MatrixXd image);
     double sigmoid(double x);
     double activation();
     double tanh(double x);

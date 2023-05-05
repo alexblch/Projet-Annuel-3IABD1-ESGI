@@ -24,7 +24,7 @@ int main()
             image(i,j) = (int)dis(gen);
     }
     int weight = image.cols() * image.rows();
-    Multilayer *ml = new Multilayer(4,weight,2,2, image);
+    Multilayer *ml = new Multilayer(4,2,2, image);
     ml->flatten();
     ml->setWeight();
     ml->displayWeight();

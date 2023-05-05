@@ -1,8 +1,7 @@
 #include "Multilayer.hpp"
 
-Multilayer::Multilayer(int data_size, int weight_size, int bias, int output_size, MatrixXd image) // constructor
+Multilayer::Multilayer(int data_size, int bias, int output_size, MatrixXd image) // constructor
 {
-    weight = new double[weight_size];
     output = new double[output_size];
     this->data_size = data_size;
     this->weight_size = weight_size;
@@ -63,7 +62,7 @@ void Multilayer::setWeight() // setter
     mt19937 gen(rd());
     uniform_real_distribution<> dis(-6, 6);
     for (int i = 0; i < image.cols() * image.rows(); i++)
-        weight[i] = (int)dis(gen);
+        weight.push_back((int)dis(gen));
 }
 
 double Multilayer::activation() // développement du perceptron
@@ -79,12 +78,33 @@ double Multilayer::activation() // développement du perceptron
     return sum;
 }
 
+double Multilayer::perceptron() // fonction de sortie
+{
+    out = 0;
+    sum = 0;
+    int increment = 0;
+    int data_increment = 0;
+    for(int i = 0 ; i < data_matrix.rows(); i++)
+    {
+        sum += bias;
+        while (data_increment < data.size())
+        {
+            sum += data[data_increment] * weight[increment];
+            data_increment++;
+            increment++;
+        }
+        data_increment = 0;
+    }
+    cout << data_matrix << endl;
+    return out;
+}
+
 void Multilayer::set_matrix_weight() 
 {
     random_device rd;
     mt19937 gen(rd());
     uniform_real_distribution<> dis(-6, 6);
-    MatrixXd matrix(neurons, hidden_Layer);
+    MatrixXd matrix(neurons *neurons, hidden_Layer);
     for(int i = 0; i < matrix.rows(); i++)
     {
         for(int j = 0; j < matrix.cols(); j++)
