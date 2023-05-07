@@ -7,7 +7,6 @@
 using namespace Eigen;
 using namespace std;
 
-
 class Multilayer
 {
 private:
@@ -18,11 +17,11 @@ private:
     int data_size;
     int weight_size;
     int output_size;
-    int hidden_Layer; // tableau de couches cachées
-    MatrixXd image;
-    MatrixXd weight_matrix;
-    MatrixXd data_matrix;
-    int neurons;
+    int hidden_Layer; // nombre de couches cachées
+    MatrixXd image; // matrice d'image
+    MatrixXd weight_matrix; // matrice de poids du réseau
+    MatrixXd data_matrix; // matrice de données du réseau
+    int neurons; // nombre de neurones dans la couche cachée
     double sum;
     double out;
 
