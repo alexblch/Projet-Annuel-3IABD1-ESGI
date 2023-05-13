@@ -37,7 +37,7 @@ int main()
     ml->set_matrix_weight();
     ml->display_matrix_weight();
     ml->set_matrix_data();
-    ml->display_dataMatrix();
+    ml->perceptron();
     return 0;
 }
 // compile with eigen3 and c++11
