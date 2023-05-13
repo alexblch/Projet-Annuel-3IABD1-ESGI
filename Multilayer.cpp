@@ -78,34 +78,43 @@ extern "C"
         return sum;
     }
 
-    double Multilayer::perceptron() // fonction de sortie
+double Multilayer::perceptron() // fonction de sortie
+{
+    out = 0;
+    sum = 0;
+    int increment = 0;
+    int data_increment = 0;
+    //remplissage de la matrice de données
+    for(int i = 0 ; i < data_matrix.rows(); i++)
     {
-        out = 0;
-        sum = 0;
-        int increment = 0;
-        int data_increment = 0;
-        for (int i = 0; i < data_matrix.rows(); i++)
+        sum += bias;
+        while (data_increment < data.size() && increment < weight.size())
         {
-            sum += bias;
-            while (data_increment < data.size() && increment < weight.size())
-            {
-                sum += data[data_increment] * weight[increment];
-                data_increment++;
-                increment++;
-            }
-            data_matrix(i, 0) = tanh(sum);
-            data_increment = 0;
+            sum += data[data_increment] * weight[increment];
+            data_increment++;
+            increment++;
         }
-        display_dataMatrix();
-        return out;
+        data_matrix(i,0) = tanh(sum);
+        data_increment = 0;
+        sum = 0;
     }
+    for (int i = 0; i < data_matrix.rows(); i++)
+    {
+        for (int j = 1; j < data_matrix.cols(); j++)
+        {
+            data_matrix(i,j) = tanh(data_matrix(i,j-1));
+        }
+    }
+    cout << data_matrix << endl;
+    return out;
+}
 
     void Multilayer::set_matrix_weight()
     {
         random_device rd;
         mt19937 gen(rd());
         uniform_real_distribution<> dis(-6, 6);
-        MatrixXd matrix(neurons * neurons, hidden_Layer-1);
+        MatrixXd matrix(data.size() * neurons, hidden_Layer-1);
         for (int i = 0; i < matrix.rows(); i++)
         {
             for (int j = 0; j < matrix.cols(); j++)

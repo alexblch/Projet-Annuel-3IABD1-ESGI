@@ -26,9 +26,8 @@ int main()
     int weight = image.cols() * image.rows();
     Multilayer *ml = new Multilayer(4,2,2, image);
     ml->flatten();
-    ml->setWeight();
-    ml->displayWeight();
     ml->set_Data();
+    ml->setWeight();
     ml->display_data();
     ml->display_matrix();
     ml->activation();
@@ -37,6 +36,7 @@ int main()
     ml->set_matrix_weight();
     ml->display_matrix_weight();
     ml->set_matrix_data();
+    ml->setWeight();
     ml->perceptron();
     return 0;
 }
