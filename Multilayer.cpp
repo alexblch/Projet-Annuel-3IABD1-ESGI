@@ -96,7 +96,7 @@ extern "C"
             out = tanh(sum);
             return out;
         }
-        //sinon remplissage de la premiere couche
+        //sinon remplissage des couches cachées
         out = 0;
         sum = 0;
         int increment = 0;
@@ -115,20 +115,19 @@ extern "C"
             data_increment = 0;
             sum = 0;
         }
-        cout << data_matrix << endl;
         //remplissage des autres couches
-        for (int i = 0; i < data_matrix.rows(); i++)
+        for (int i = 1; i < data_matrix.cols(); i++)
         {
-            for (int j = 1; j < data_matrix.cols(); j++)
+            for (int j = 0; j < data_matrix.rows(); j++)
             {
                 sum += bias;
                 while (data_increment < data_matrix.rows() && increment < weight_matrix.rows())
                 {
-                    sum += data_matrix(data_increment, j - 1) * weight_matrix(increment, j - 1);
+                    sum += data_matrix(data_increment, i - 1) * weight_matrix(increment, i - 1);
                     data_increment++;
                     increment++;
                 }
-                data_matrix(i, j) = tanh(sum);
+                data_matrix(j,i) = tanh(sum);
                 data_increment = 0;
                 sum = 0;
             }
@@ -136,11 +135,8 @@ extern "C"
         out = 0;
         out += bias;
         for (int i = 0; i < data_matrix.rows(); i++)
-        {
             out += data_matrix(i, data_matrix.cols() - 1) * weight_output[i];
-        }
         out = tanh(out);
-        cout << data_matrix << endl;
         return out;
     }
 

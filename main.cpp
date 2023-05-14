@@ -41,6 +41,7 @@ int main()
     ml->setWeight();
     ml->set_weight_output();
     ml->perceptron();
+    ml->display_dataMatrix();
     ml->display_output();
     return 0;
 }
