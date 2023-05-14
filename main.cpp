@@ -10,9 +10,11 @@ using namespace Eigen;
 
 int main()
 {
-    int rows, cols;
+    int rows, cols, random;
     cout << "Welcome to the ML maker, enter number of rows and columns : (%d %d)" << endl;
     cin >> rows >> cols;
+    cout << "Enter the random number : ";
+    cin >> random;
     //random number
     random_device rd;
     mt19937 gen(rd());
@@ -24,7 +26,7 @@ int main()
             image(i,j) = (int)dis(gen);
     }
     int weight = image.cols() * image.rows();
-    Multilayer *ml = new Multilayer(4,1,2, image);
+    Multilayer *ml = new Multilayer(4,1,2, image, random);
     ml->flatten();
     ml->set_Data();
     ml->setWeight();

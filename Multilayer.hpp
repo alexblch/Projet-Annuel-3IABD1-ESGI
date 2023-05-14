@@ -25,9 +25,10 @@ private:
     int neurons; // nombre de neurones dans la couche cachée
     double sum;
     double out;
+    int random;
 
 public:
-    Multilayer(int data_size, int bias, int output_size, MatrixXd image);
+    Multilayer(int data_size, int bias, int output_size, MatrixXd image, int random);
     double sigmoid(double x);
     double activation();
     double tanh(double x);

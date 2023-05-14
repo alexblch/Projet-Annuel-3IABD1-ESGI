@@ -3,7 +3,7 @@
 extern "C"
 {
 
-    Multilayer::Multilayer(int data_size, int bias, int output_size, MatrixXd image) // constructor
+    Multilayer::Multilayer(int data_size, int bias, int output_size, MatrixXd image, int random) // constructor
     {
         output = new double[output_size];
         this->data_size = data_size;
@@ -11,6 +11,7 @@ extern "C"
         this->bias = bias;
         this->output_size = output_size;
         this->image = image;
+        this->random = random;
     }
 
     void Multilayer::displaySum() { cout << "Sum : " << sum << endl; } // afficher la somme
@@ -62,7 +63,7 @@ extern "C"
     {
         random_device rd;
         mt19937 gen(rd());
-        uniform_real_distribution<> dis(-6, 6);
+        uniform_real_distribution<> dis(-(random), (random));
         for (int i = 0; i < image.cols() * image.rows(); i++)
             weight.push_back((int)dis(gen));
     }
@@ -114,15 +115,16 @@ extern "C"
             data_increment = 0;
             sum = 0;
         }
+        cout << data_matrix << endl;
         //remplissage des autres couches
         for (int i = 0; i < data_matrix.rows(); i++)
         {
             for (int j = 1; j < data_matrix.cols(); j++)
             {
                 sum += bias;
-                while (data_increment < data_matrix.rows() && increment < weight_matrix.cols())
+                while (data_increment < data_matrix.rows() && increment < weight_matrix.rows())
                 {
-                    sum += data_matrix(increment, j - 1) * weight_matrix(data_increment, j - 1);
+                    sum += data_matrix(data_increment, j - 1) * weight_matrix(increment, j - 1);
                     data_increment++;
                     increment++;
                 }
@@ -146,7 +148,7 @@ extern "C"
     {
         random_device rd;
         mt19937 gen(rd());
-        uniform_real_distribution<> dis(-6, 6);
+        uniform_real_distribution<> dis(-(random), (random));
         MatrixXd matrix(data.size() * neurons, hidden_Layer - 1);
         for (int i = 0; i < matrix.rows(); i++)
         {
@@ -159,7 +161,7 @@ extern "C"
     {
         random_device rd;
         mt19937 gen(rd());
-        uniform_real_distribution<> dis(-6, 6);
+        uniform_real_distribution<> dis(-(random), (random));
         for (int i = 0; i < neurons; i++)
             weight_output.push_back((int)dis(gen));
     }
