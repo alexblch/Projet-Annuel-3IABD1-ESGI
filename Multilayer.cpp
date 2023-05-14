@@ -23,6 +23,8 @@ extern "C"
 
     void Multilayer::display_matrix_weight() { cout << weight_matrix << endl; } // afficher la matrice de poids
 
+    void Multilayer::display_output() /*afficher la sortie*/ { cout << "Output : " << out << endl; }
+
     void Multilayer::set_Data()
     {
         for (int i = 0; i < data.size(); i++)
@@ -78,49 +80,88 @@ extern "C"
         return sum;
     }
 
-double Multilayer::perceptron() // fonction de sortie
-{
-    out = 0;
-    sum = 0;
-    int increment = 0;
-    int data_increment = 0;
-    //remplissage de la matrice de données
-    for(int i = 0 ; i < data_matrix.rows(); i++)
+    double Multilayer::perceptron() // fonction de sortie
     {
-        sum += bias;
-        while (data_increment < data.size() && increment < weight.size())
+        // cas NULL
+        if(hidden_Layer == 0 || neurons == 0)
         {
-            sum += data[data_increment] * weight[increment];
-            data_increment++;
-            increment++;
+            out = 0;
+            sum = 0;
+            for (int i = 0; i < data.size(); i++)
+            {
+                sum += data[i] * weight[i];
+            }
+            sum += bias;
+            out = tanh(sum);
+            return out;
         }
-        data_matrix(i,0) = tanh(sum);
-        data_increment = 0;
+        //sinon remplissage de la premiere couche
+        out = 0;
         sum = 0;
-    }
-    for (int i = 0; i < data_matrix.rows(); i++)
-    {
-        for (int j = 1; j < data_matrix.cols(); j++)
+        int increment = 0;
+        int data_increment = 0;
+        // remplissage de la matrice de données
+        for (int i = 0; i < data_matrix.rows(); i++)
         {
-            data_matrix(i,j) = tanh(data_matrix(i,j-1));
+            sum += bias;
+            while (data_increment < data.size() && increment < weight.size())
+            {
+                sum += data[data_increment] * weight[increment];
+                data_increment++;
+                increment++;
+            }
+            data_matrix(i, 0) = tanh(sum);
+            data_increment = 0;
+            sum = 0;
         }
+        //remplissage des autres couches
+        for (int i = 0; i < data_matrix.rows(); i++)
+        {
+            for (int j = 1; j < data_matrix.cols(); j++)
+            {
+                sum += bias;
+                while (data_increment < data_matrix.rows() && increment < weight_matrix.cols())
+                {
+                    sum += data_matrix(increment, j - 1) * weight_matrix(data_increment, j - 1);
+                    data_increment++;
+                    increment++;
+                }
+                data_matrix(i, j) = tanh(sum);
+                data_increment = 0;
+                sum = 0;
+            }
+        }
+        out = 0;
+        out += bias;
+        for (int i = 0; i < data_matrix.rows(); i++)
+        {
+            out += data_matrix(i, data_matrix.cols() - 1) * weight_output[i];
+        }
+        out = tanh(out);
+        cout << data_matrix << endl;
+        return out;
     }
-    cout << data_matrix << endl;
-    return out;
-}
 
     void Multilayer::set_matrix_weight()
     {
         random_device rd;
         mt19937 gen(rd());
         uniform_real_distribution<> dis(-6, 6);
-        MatrixXd matrix(data.size() * neurons, hidden_Layer-1);
+        MatrixXd matrix(data.size() * neurons, hidden_Layer - 1);
         for (int i = 0; i < matrix.rows(); i++)
         {
             for (int j = 0; j < matrix.cols(); j++)
                 matrix(i, j) = (int)dis(gen);
         }
         this->weight_matrix = matrix;
+    }
+    void Multilayer::set_weight_output()
+    {
+        random_device rd;
+        mt19937 gen(rd());
+        uniform_real_distribution<> dis(-6, 6);
+        for (int i = 0; i < neurons; i++)
+            weight_output.push_back((int)dis(gen));
     }
 
     void Multilayer::set_hidden_layer()

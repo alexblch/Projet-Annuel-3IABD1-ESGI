@@ -11,7 +11,8 @@ class Multilayer
 {
 private:
     vector <double>data;   // tableau de données
-    vector <float>weight; // tableau de poids
+    vector <double>weight; // tableau de poids
+    vector <double>weight_output; // tableau de sortie
     double bias;    // tableau de biais
     double *output; // tableau de sortie
     int data_size;
@@ -43,5 +44,7 @@ public:
     void set_matrix_data();
     void set_hidden_layer();
     void display_dataMatrix();
+    void display_output();
+    void set_weight_output();
     //~Multilayer();
 };

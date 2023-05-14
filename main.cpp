@@ -24,7 +24,7 @@ int main()
             image(i,j) = (int)dis(gen);
     }
     int weight = image.cols() * image.rows();
-    Multilayer *ml = new Multilayer(4,2,2, image);
+    Multilayer *ml = new Multilayer(4,1,2, image);
     ml->flatten();
     ml->set_Data();
     ml->setWeight();
@@ -37,7 +37,9 @@ int main()
     ml->display_matrix_weight();
     ml->set_matrix_data();
     ml->setWeight();
+    ml->set_weight_output();
     ml->perceptron();
+    ml->display_output();
     return 0;
 }
 // compile with eigen3 and c++11
