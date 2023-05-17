@@ -68,7 +68,7 @@ extern "C"
             weight.push_back((int)dis(gen));
     }
 
-    double Multilayer::activation() // développement du perceptron
+    double Multilayer::activation() // linear model
     {
         sum = 0;
         for (int i = 0; i < data.size(); i++)
@@ -78,19 +78,26 @@ extern "C"
         }
         sum += bias;
         sum = tanh(sum);
+        if(sum > 0.5)
+            return 1;
+        else if(sum < -0.5)
+            return -1;
+        else
+            return 0;
         return sum;
     }
 
-    double Multilayer::perceptron() // fonction de sortie
+    double Multilayer::perceptron() // fonction de sortie, perceptron multicouche
     {
         // cas NULL
+        sum = 0;
         if(hidden_Layer == 0 || neurons == 0)
         {
             out = 0;
             sum = 0;
             for (int i = 0; i < data.size(); i++)
             {
-                sum += data[i] * weight[i];
+                sum += data[i] * weight[i]; 
             }
             sum += bias;
             out = tanh(sum);
@@ -115,6 +122,7 @@ extern "C"
             data_increment = 0;
             sum = 0;
         }
+        display_dataMatrix();
         //remplissage des autres couches
         for (int i = 1; i < data_matrix.cols(); i++)
         {
@@ -131,6 +139,7 @@ extern "C"
                 data_increment = 0;
                 sum = 0;
             }
+            display_dataMatrix();
         }
         out = 0;
         out += bias;

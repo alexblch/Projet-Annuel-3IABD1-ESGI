@@ -26,6 +26,7 @@ private:
     double sum;
     double out;
     int random;
+    double sumML;
 
 public:
     Multilayer(int data_size, int bias, int output_size, MatrixXd image, int random);
