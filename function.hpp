@@ -11,9 +11,9 @@ double tanh(double x)
     return (exp(x) - exp(-x)) / (exp(x) + exp(-x));
 }
 
-int *flatten(int **mat, int rows, int cols)
+double *flatten(int **mat, int rows, int cols)
 {
-    int *array = new int[rows * cols];
+    double *array = new double[rows * cols];
     int k = 0;
     for (int i = 0; i < rows; i++)
     {
@@ -24,6 +24,16 @@ int *flatten(int **mat, int rows, int cols)
         }
     }
     return array;
+}
+
+double** set_Image(double **mat, int rows, int cols)
+{
+    for(int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols;j++)
+            mat[i][j] /= 255;
+    }
+    return mat;
 }
 
 void display_matrix(int **mat, int rows, int cols)
@@ -42,3 +52,22 @@ void display_array(int *array, int size)
         cout << array[i] << " ";
     cout << endl;
 }
+
+double linear_model(double *data, double *weight, int size, int bias)
+{
+    double sum = 0;
+    sum += bias;
+    for (int i = 0; i < size; i++)
+        sum += data[i] * weight[i];
+    return sum;
+}
+
+
+void set_Hiddenlayer(int &neuron, int &hidden_layer)
+{
+    cout << "Enter the number of hidden layer : ";
+    cin >> hidden_layer;
+    cout << "Enter the number of neurons in each hidden layer : ";
+    cin >> neuron;
+}
+
