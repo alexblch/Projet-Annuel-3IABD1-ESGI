@@ -1,5 +1,6 @@
 #include "Multilayer.hpp"
 #include <iostream>
+
 extern "C"
 {
 
@@ -78,12 +79,12 @@ extern "C"
         }
         sum += bias;
         sum = tanh(sum);
-        if(sum > 0.5)
+        /*if(sum > 0.5)
             return 1;
         else if(sum < -0.5)
             return -1;
         else
-            return 0;
+            return 0;*/
         return sum;
     }
 
@@ -102,7 +103,7 @@ extern "C"
             sum += bias;
             out = tanh(sum);
             return out;
-        }
+        } 
         //sinon remplissage des couches cachées
         out = 0;
         sum = 0;
