@@ -59,7 +59,12 @@ extern "C"
         sum += bias;
         for (int i = 0; i < size; i++)
             sum += data[i] * weight[i];
-        return tanh(sum);
+        if(tanh(sum) > 0.5)
+            return 1;
+        if(tanh(sum) < -0.5)
+            return -1;
+        else
+            return 0;
     }
 
     void set_Hiddenlayer(int &neuron, int &hidden_layer)
@@ -69,6 +74,9 @@ extern "C"
         cout << "Enter the number of neurons in each hidden layer : ";
         cin >> neuron;
     }
+
+
+    
     double* set_weight_output(int neurons, int random)
     {
         double* weight_output = new double[neurons];

@@ -1,27 +1,48 @@
-import ctypes
-import numpy as np
+#import image
+from PIL import Image
 
+import ctypes
+
+#library
 lib = ctypes.cdll.LoadLibrary('./libadd.so')
 
-tanh = lib.tanh
-tanh.argtypes = [ctypes.c_double]
-tanh.restype = ctypes.c_double
 
-n = 0.5
+def tanh(x, lib):
+    func = lib.tanh
+    func.restype = ctypes.c_double
+    func.argtypes = [ctypes.c_double]
+    return func(x)
 
-set_Data = lib.set_Data
+def linear_model(data, weight, size, bias, lib):
+    func = lib.linear_model
+    func.restype = ctypes.c_double
+    func.argtypes = (ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.c_double, ctypes.c_int)
+    data_array = (ctypes.c_double * len(data))(*data)
+    weight_array = (ctypes.c_double * len(weight))(*weight)
+    res = func(data_array, weight_array, size, bias)
+    return res
 
-set_Data.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.c_int]
-set_Data.restype = ctypes.POINTER(ctypes.c_double)
+def set_Data(data, size, lib):
+    func = lib.set_Data
+    func.restype = ctypes.c_void_p
+    func.argtypes = (ctypes.POINTER(ctypes.c_double), ctypes.c_int)
+    data_array = (ctypes.c_double * len(data))(*data)
+    data_array = func(data_array, size)
+    return data_array
 
+data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+weight = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+    
 
-data = [255, 255, 255]
-size = len(data)
+data = set_Data(data, len(data), lib)
+print(data)
 
-array = (ctypes.c_double * size)(*data)
-result = lib.set_Data(array, size)
-result_list = [result[i] for i in range(size)]
+res : float
+res = 4.0
 
-print(f"vecteur setdata = {result_list}")
+n = int(input("Enter a number: "))
+print(tanh(n, lib))
+#res = linear_model(data, weight, len(data), 1, lib)
+res = tanh(res, lib)
+print(f'result = {res}')
 
-print(tanh(n))
