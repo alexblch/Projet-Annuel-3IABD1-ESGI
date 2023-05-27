@@ -7,6 +7,8 @@ using namespace std;
 using namespace Eigen;
 
 
+//g++ -fPIC -shared -I /usr/include/eigen3 function.cpp -o libadd.so
+
 extern "C"
 {
     double tanh(double x)
@@ -70,6 +72,19 @@ extern "C"
         }
         MatrixXd data_matrix(neurons, hidden_Layer);
         MatrixXd weight_matrix(neurons*neurons, hidden_Layer-1);
+        //remplir le vecteur de poids de sortie
+        for (int i = 0; i < neurons; i++)
+        {
+            weight_output.push_back(dis(gen));
+        }
+        //remplir la matrice de poids
+        for (int i = 0; i < weight_matrix.rows(); i++)
+        {
+            for (int j = 0; j < weight_matrix.cols(); j++)
+            {
+                weight_matrix(i, j) = weight[i];
+            }
+        }
         int sum = 0;
         if(hidden_Layer == 0 || neurons == 0)
         {
@@ -172,4 +187,4 @@ extern "C"
 
 }
 
-//g++ -fPIC -shared -I /usr/include/eigen3 function.cpp -o libadd.so
+
