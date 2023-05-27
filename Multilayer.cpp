@@ -60,6 +60,8 @@ extern "C"
         this->data = data;
     }
 
+    
+
     void Multilayer::setWeight() // setter
     {
         random_device rd;

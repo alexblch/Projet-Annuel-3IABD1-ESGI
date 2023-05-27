@@ -36,6 +36,9 @@
   "C_Cpp_Runner.useAddressSanitizer": false,
   "files.associations": {
     "*.embeddedhtml": "html",
-    "vector": "cpp"
+    "vector": "cpp",
+    "iostream": "cpp",
+    "cmath": "cpp",
+    "xutility": "cpp"
   }
 }
