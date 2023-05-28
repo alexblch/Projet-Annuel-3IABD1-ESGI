@@ -65,11 +65,6 @@ extern "C"
         {
             weight.push_back(dis(gen));
         }
-        
-        for (int i = 0; i < size * neurons; i++)
-        {
-            weight[i] = dis(gen);
-        }
         MatrixXd data_matrix(neurons, hidden_Layer);
         MatrixXd weight_matrix(neurons*neurons, hidden_Layer-1);
         //remplir le vecteur de poids de sortie
@@ -88,15 +83,7 @@ extern "C"
         int sum = 0;
         if(hidden_Layer == 0 || neurons == 0)
         {
-            int out = 0;
-            sum = 0;
-            for (int i = 0; i < size; i++)
-            {
-                sum += data[i] * weight[i]; 
-            }
-            sum += bias;
-            out = tanh(sum);
-            return out;
+            return 404;
         } 
         //sinon remplissage des couches cachées
         int out = 0;
@@ -130,7 +117,7 @@ extern "C"
                     data_increment++;
                     increment++;
                 }
-                data_matrix(j,i) = (exp(sum) - exp(-sum)) / (exp(sum) + exp(-sum));
+                data_matrix(j,i) = tanh(sum);
                 data_increment = 0;
                 sum = 0;
             }
@@ -140,7 +127,7 @@ extern "C"
         out += bias;
         for (int i = 0; i < data_matrix.rows(); i++)
             out += data_matrix(i, data_matrix.cols() - 1) * weight_output[i];
-        out = (exp(out) - exp(-out)) / (exp(out) + exp(-out)); // tanh
+        out = tanh(out); // tanh
         return out;
     }
 
@@ -160,7 +147,7 @@ extern "C"
             sum += data[i] * weight[i];
             cout << sum << " " << endl;
         }
-        return sum;
+        return tan(sum);
     }
 
     void set_Hiddenlayer(int &neuron, int &hidden_layer)
