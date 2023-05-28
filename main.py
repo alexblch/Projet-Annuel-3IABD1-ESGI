@@ -1,17 +1,14 @@
 #import image
+import random
 from PIL import Image
 
 import ctypes
+
 
 #library
 lib = ctypes.cdll.LoadLibrary('./libadd.so')
 
 
-def tanh(x, lib):
-    func = lib.tanh
-    func.restype = ctypes.c_double
-    func.argtypes = [ctypes.c_double]
-    return func(x)
 
 def linear_model(data, weight, size, bias, lib):
     func = lib.linear_model
@@ -23,17 +20,32 @@ def linear_model(data, weight, size, bias, lib):
     return res
 
 
+def perceptron( hidden_Layer, neurons, random, data, bias, size, lib):
+    func = lib.perceptron
+    func.restype = ctypes.c_double
+    func.argtypes = (ctypes.c_int, ctypes.c_int, ctypes.c_int ,ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_int)
+    data_array = (ctypes.c_double * len(data))(*data)
+    res = func(hidden_Layer, neurons, random, data_array, size, bias)
+    return res
 
-data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
-weight = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+
+
+data = []
+weight = []
 print(weight)
 
-res : float
+
 
 n = int(input("Enter a number: "))
-print(tanh(n, lib))
+for i in range(n):
+    data.append(i)
+    weight.append(random.randint(-100, 100))
+print(weight)
 res = linear_model(data, weight, len(data), 1, lib)
 print(f"res = {res}")
-res = tanh(res, lib)
-print(f'result = {res}')
 
+hidden_Layer = int(input("Enter a number of hidden layer: "))
+neurons = int(input("Enter a number of neurons: "))
+random = int(input("Enter a number of random: "))
+res = perceptron(hidden_Layer, neurons, random, data, 1, len(data), lib)
+print(f"res = {res}")

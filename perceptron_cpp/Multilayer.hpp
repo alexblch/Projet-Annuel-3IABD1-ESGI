@@ -32,7 +32,6 @@ public:
     Multilayer(int data_size, int bias, int output_size, MatrixXd image, int random);
     double sigmoid(double x);
     double activation();
-    double tanh(double x);
     double perceptron();
     void flatten();
     void display_matrix();

@@ -19,7 +19,7 @@ extern "C"
 
     double Multilayer::sigmoid(double x) { return 1 / (1 + exp(-x)); }
 
-    double Multilayer::tanh(double x) { return (exp(x) - exp(-x)) / (exp(x) + exp(-x)); } // tanh function
+    //double Multilayer::tanh(double x) { return (exp(x) - exp(-x)) / (exp(x) + exp(-x)); } // tanh function
 
     void Multilayer::display_matrix() { cout << image << endl; } // afficher la matrice
 
