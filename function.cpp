@@ -14,8 +14,17 @@ void display_matrix(MatrixXd mat, int rows, int cols)
     {
         for (int j = 0; j < cols; j++)
             cout << mat(i, j) << " ";
+        cout << endl;
     }
     cout << endl;
+}
+
+void display_vector(vector<double> vec)
+{
+    cout << "vector : " << endl;
+    for (int i = 0; i < vec.size(); i++)
+        cout << vec[i] << " ";
+    cout << endl << endl;
 }
 
 extern "C"
@@ -59,11 +68,20 @@ extern "C"
         random_device rd;
         mt19937 gen(rd());
         uniform_real_distribution<> dis(-random, random);
+        for(int i = 0; i < neurons; i++)
+            weight_output.push_back((int)dis(gen));
+        display_vector(weight_output);
         // cas NULL
         //remplir le vecteur de poids
         for (int i = 0; i < size * neurons; i++)
-            weight.push_back(dis(gen));
+            weight.push_back((int)dis(gen));
         MatrixXd data_matrix(neurons, hidden_Layer);
+        for (int i = 0; i < data_matrix.rows() ; i++)
+        {
+            for (int j = 0; j < data_matrix.cols(); j++)
+                data_matrix(i, j) = 0;
+        }
+        display_matrix(data_matrix, data_matrix.rows(), data_matrix.cols());
         MatrixXd weight_matrix(neurons*neurons, hidden_Layer-1);
         //remplir le vecteur de poids de sortie
         for (int i = 0; i < neurons; i++)
@@ -80,7 +98,6 @@ extern "C"
             return 404;
         } 
         //sinon remplissage des couches cachées
-        int out = 0;
         sum = 0;
         int increment = 0;
         int data_increment = 0;
@@ -116,12 +133,18 @@ extern "C"
                 sum = 0;
             }
             display_matrix(data_matrix, data_matrix.rows(), data_matrix.cols());
+            display_matrix(weight_matrix, weight_matrix.rows(), weight_matrix.cols());
         }
-        out = 0;
+        double out = 0;
         out += bias;
         for (int i = 0; i < data_matrix.rows(); i++)
+        {
             out += data_matrix(i, data_matrix.cols() - 1) * weight_output[i];
+            cout << out << endl;
+        }
+        cout << "out : " << out << endl;
         out = tanh(out); // tanh
+        cout << "tanh : " << out << endl;
         return out;
     }
 

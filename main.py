@@ -34,7 +34,7 @@ data = []
 weight = []
 print(weight)
 
-
+bias = 1
 
 n = int(input("Enter a number: "))
 for i in range(n):
@@ -47,5 +47,5 @@ print(f"res = {res}")
 hidden_Layer = int(input("Enter a number of hidden layer: "))
 neurons = int(input("Enter a number of neurons: "))
 random = int(input("Enter a number of random: "))
-res = perceptron(hidden_Layer, neurons, random, data, 1, len(data), lib)
+res = perceptron(hidden_Layer, neurons, random, data, bias, len(data), lib)
 print(f"res = {res}")
