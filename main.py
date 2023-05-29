@@ -25,20 +25,20 @@ def perceptron( hidden_Layer, neurons, random, data, bias, size, lib):
     func.restype = ctypes.c_double
     func.argtypes = (ctypes.c_int, ctypes.c_int, ctypes.c_int ,ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_int)
     data_array = (ctypes.c_double * len(data))(*data)
-    res = func(hidden_Layer, neurons, random, data_array, size, bias)
+    res = func(hidden_Layer, neurons, random, data_array, bias ,size)
     return res
+
 
 
 
 data = []
 weight = []
-print(weight)
 
 bias = 1
 
 n = int(input("Enter a number: "))
 for i in range(n):
-    data.append(i)
+    data.append(random.randint(0, 255))
     weight.append(random.randint(-100, 100))
 print(weight)
 res = linear_model(data, weight, len(data), 1, lib)
