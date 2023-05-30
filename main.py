@@ -1,6 +1,8 @@
 #import image
 import random
 from PIL import Image
+import numpy as np
+
 
 import ctypes
 
@@ -29,7 +31,7 @@ def perceptron( hidden_Layer, neurons, random, data, bias, size, lib):
     return res
 
 
-
+rand = int(input("Enter a number of random: "))
 
 data = []
 weight = []
@@ -39,7 +41,7 @@ bias = 1
 n = int(input("Enter a number: "))
 for i in range(n):
     data.append(random.randint(0, 255))
-    weight.append(random.randint(-100, 100))
+    weight.append(random.randint(-rand, rand))
 print(weight)
 res = linear_model(data, weight, len(data), 1, lib)
 print(f"res = {res}")

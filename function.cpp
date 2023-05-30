@@ -70,9 +70,9 @@ extern "C"
 
     double perceptron(int hidden_Layer, int neurons, int random, double *data, int bias, int size) // fonction de sortie, perceptron multicouche
     {
-        display_tab(data, size);
+        //display_tab(data, size);
         data = set_Data(data, size);
-        display_tab(data, size);
+        //display_tab(data, size);
         // random number
         vector<double> weight;
         vector<double> weight_output;
@@ -81,7 +81,7 @@ extern "C"
         uniform_real_distribution<> dis(-random, random);
         for (int i = 0; i < neurons; i++)
             weight_output.push_back((int)dis(gen));
-        display_vector(weight_output);
+        //display_vector(weight_output);
         // cas NULL
         // remplir le vecteur de poids
         for (int i = 0; i < size * neurons; i++)
@@ -92,7 +92,7 @@ extern "C"
             for (int j = 0; j < data_matrix.cols(); j++)
                 data_matrix(i, j) = 0;
         }
-        display_matrix(data_matrix, data_matrix.rows(), data_matrix.cols());
+        //display_matrix(data_matrix, data_matrix.rows(), data_matrix.cols());
         MatrixXd weight_matrix(neurons * neurons, hidden_Layer - 1);
         // remplir le vecteur de poids de sortie
         for (int i = 0; i < neurons; i++)
@@ -101,7 +101,7 @@ extern "C"
         for (int i = 0; i < weight_matrix.rows(); i++)
         {
             for (int j = 0; j < weight_matrix.cols(); j++)
-                weight_matrix(i, j) = weight[i];
+                weight_matrix(i, j) = dis(gen);
         }
         int sum = 0;
         if (hidden_Layer == 0 || neurons == 0)
@@ -143,8 +143,8 @@ extern "C"
                 data_increment = 0;
                 sum = 0;
             }
-            display_matrix(data_matrix, data_matrix.rows(), data_matrix.cols());
-            display_matrix(weight_matrix, weight_matrix.rows(), weight_matrix.cols());
+            //display_matrix(data_matrix, data_matrix.rows(), data_matrix.cols());
+            //display_matrix(weight_matrix, weight_matrix.rows(), weight_matrix.cols());
         }
         double out = 0;
         out += bias;
@@ -153,9 +153,9 @@ extern "C"
             out += data_matrix(i, data_matrix.cols() - 1) * weight_output[i];
             cout << out << endl;
         }
-        cout << "out : " << out << endl;
+        //cout << "out : " << out << endl;
         out = tanh(out); // tanh
-        cout << "tanh : " << out << endl;
+        //cout << "tanh : " << out << endl;
         return out;
     }
 
@@ -168,6 +168,8 @@ extern "C"
 
     double linear_model(double *data, double *weight, int size, int bias)
     {
+        data = set_Data(data, size);
+        //display_tab(data, size);
         double sum = 0;
         if (size == 0)
             return 404;
@@ -178,10 +180,15 @@ extern "C"
             cout << sum << " ";
         }
         cout << endl;
-        cout << "sum : " << sum << endl;
-        cout << "tanh : " << tanh(sum) << endl;
+        /*cout << "sum : " << sum << endl;
+        cout << "tanh : " << tanh(sum) << endl;*/
         sum = tanh(sum);
-        return sum;
+        if (sum < -0.33)
+            return -1;
+        if (sum > -0.33 && sum < 0.33)
+            return 0;
+        else
+            return 1;
     }
 
     void set_Hiddenlayer(int &neuron, int &hidden_layer)
