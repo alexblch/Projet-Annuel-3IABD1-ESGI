@@ -2,9 +2,34 @@
 import random
 from PIL import Image
 import numpy as np
-
+import os
 
 import ctypes
+
+# Convertie l'image en matrice
+def get_matrice_image(img):
+    img_mat = np.array(img)
+    return img_mat
+
+# Retourne la liste d'image d'un dossier
+def get_img_list(directory):
+    img_dir = directory
+    img_list = []
+    for img_name in os.listdir(img_dir):
+        img_path = os.path.join(img_dir, img_name)
+        img = Image.open(img_path)
+        img_list.append(img)
+    return img_list
+
+img_flatten_list = []
+img_list = get_img_list("./Dataset")
+for img in img_list:
+    img_mat = get_matrice_image(img)
+    img_flatten = img_mat.flatten()
+    img_flatten_list.append(img_flatten)
+
+for flatten in img_flatten_list:
+    print(f'Image : {flatten}')
 
 
 #library
