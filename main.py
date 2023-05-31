@@ -41,7 +41,7 @@ bias = 1
 n = int(input("Enter a number: "))
 for i in range(n):
     data.append(random.randint(0, 255))
-    weight.append(random.randint(-rand, rand))
+    weight.append(random.choice([-1, 1]))
 print(weight)
 res = linear_model(data, weight, len(data), 1, lib)
 print(f"res = {res}")
