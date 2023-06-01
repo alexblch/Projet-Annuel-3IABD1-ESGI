@@ -22,14 +22,14 @@ def get_img_list(directory):
     return img_list
 
 img_flatten_list = []
-img_list = get_img_list("./Dataset")
+img_list = get_img_list("./dataset/terrain_de_football/train/")
 for img in img_list:
     img_mat = get_matrice_image(img)
     img_flatten = img_mat.flatten()
     img_flatten_list.append(img_flatten)
 
 for flatten in img_flatten_list:
-    print(f'Image : {flatten}')
+    print(f'Image {img_list[0]}: {flatten}')
 
 
 #library
@@ -66,7 +66,7 @@ bias = 1
 n = int(input("Enter a number: "))
 for i in range(n):
     data.append(random.randint(0, 255))
-    weight.append(random.choice([-1, 1]))
+    weight.append(random.randint(-(rand), rand))
 print(weight)
 res = linear_model(data, weight, len(data), 1, lib)
 print(f"res = {res}")
