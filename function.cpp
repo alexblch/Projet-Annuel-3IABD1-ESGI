@@ -151,9 +151,9 @@ extern "C"
         for (int i = 0; i < size; i++)
         {
             sum += data[i] * weight[i];
-            cout << sum << " ";
+            //cout << sum << " ";
         }
-        cout << endl;
+        //cout << endl;
         /*cout << "sum : " << sum << endl;
         cout << "tanh : " << tanh(sum) << endl;*/
         sum = tanh(sum);
