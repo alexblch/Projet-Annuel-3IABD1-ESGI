@@ -18,7 +18,10 @@ def get_img_list(directory):
     for img_name in os.listdir(img_dir):
         img_path = os.path.join(img_dir, img_name)
         img = Image.open(img_path)
-        img_list.append(img)
+        img_resized = img.resize((64, 64))
+        img_black_white = img_resized.convert('L')
+        
+        img_list.append(img_black_white)
     return img_list
 
 img_flatten_list = []
@@ -29,7 +32,7 @@ for img in img_list:
     img_flatten_list.append(img_flatten)
 
 for flatten in img_flatten_list:
-    print(f'Image {img_list[0]}: {flatten}')
+    print(f'Image : {flatten}')
 
 
 #library
@@ -55,6 +58,9 @@ def perceptron( hidden_Layer, neurons, random, data, bias, size, lib):
     res = func(hidden_Layer, neurons, random, data_array, bias ,size)
     return res
 
+football_train = []
+
+
 
 rand = int(input("Enter a number of random: "))
 
@@ -64,12 +70,12 @@ weight = []
 bias = 1
 
 n = int(input("Enter a number: "))
-for i in range(n):
-    data.append(random.randint(0, 255))
-    weight.append(random.randint(-(rand), rand))
-print(weight)
-res = linear_model(data, weight, len(data), 1, lib)
-print(f"res = {res}")
+for flatten in img_flatten_list:
+    for i in range(len(flatten)):
+        weight.append(random.randint(-rand, rand))
+    football_train.append(linear_model(flatten, weight, len(flatten), bias, lib))
+print(football_train)
+
 
 hidden_Layer = int(input("Enter a number of hidden layer: "))
 neurons = int(input("Enter a number of neurons: "))

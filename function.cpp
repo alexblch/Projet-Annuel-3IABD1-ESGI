@@ -48,25 +48,6 @@ void display_tab(double *tab, int size)
 
 extern "C"
 {
-    double tanh(double x)
-    {
-        return (exp(x) - exp(-x)) / (exp(x) + exp(-x));
-    }
-
-    double *flatten(MatrixXd mat, int rows, int cols)
-    {
-        double *array = new double[rows * cols];
-        int k = 0;
-        for (int i = 0; i < rows; i++)
-        {
-            for (int j = 0; j < cols; j++)
-            {
-                array[k] = mat(i, j);
-                k++;
-            }
-        }
-        return array;
-    }
 
     double perceptron(int hidden_Layer, int neurons, int random, double *data, int bias, int size) // fonction de sortie, perceptron multicouche
     {
@@ -159,13 +140,6 @@ extern "C"
         return out;
     }
 
-    void display_array(int *array, int size)
-    {
-        for (int i = 0; i < size; i++)
-            cout << array[i] << " ";
-        cout << endl;
-    }
-
     double linear_model(double *data, double *weight, int size, int bias)
     {
         data = set_Data(data, size);
@@ -189,24 +163,5 @@ extern "C"
             return 0;
         else
             return 1;
-    }
-
-    void set_Hiddenlayer(int &neuron, int &hidden_layer)
-    {
-        cout << "Enter the number of hidden layer : ";
-        cin >> hidden_layer;
-        cout << "Enter the number of neurons in each hidden layer : ";
-        cin >> neuron;
-    }
-
-    double *set_weight_output(int neurons, int random)
-    {
-        double *weight_output = new double[neurons];
-        random_device rd;
-        mt19937 gen(rd());
-        uniform_real_distribution<> dis(-(random), (random));
-        for (int i = 0; i < neurons; i++)
-            weight_output[i] = (int)dis(gen);
-        return weight_output;
     }
 }
