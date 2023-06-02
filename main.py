@@ -201,14 +201,70 @@ print(f'Result test basket for perceptron :{basket_testMLP}\n\n')
 #plotting
 import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
+# Graphique pour le football
+plt.figure(1)
+plt.scatter(range(len(football_train)), football_train, label='Entraînement', color='red')
+plt.scatter(range(len(football_test)), football_test, label='Test', color='blue')
+plt.xlabel('Échantillons')
+plt.ylabel('Résultats')
+plt.title('Football')
+plt.savefig('football.png')
+plt.legend()
 
+# Graphique pour le tennis
+plt.figure(2)
+plt.scatter(range(len(tennis_train)), tennis_train, label='Entraînement', color='red')
+plt.scatter(range(len(tennis_test)), tennis_test, label='Test', color='blue')
+plt.xlabel('Échantillons')
+plt.ylabel('Résultats')
+plt.title('Tennis')
+plt.savefig('tennis.png')
+plt.legend()
 
-plt.scatter([-1, 0, 1], football_test)
-plt.xlabel('Axe X')
-plt.ylabel('Axe Y')
-plt.title('Graphique avec Matplotlib')
-plt.savefig('graphique.png')
+# Graphique pour le basket
+plt.figure(3)
+plt.scatter(range(len(basket_train)), basket_train, label='Entraînement', color='red')
+plt.scatter(range(len(basket_test)), basket_test, label='Test', color='blue')
+plt.xlabel('Échantillons')
+plt.ylabel('Résultats')
+plt.title('Basket')
+plt.savefig('basket.png')
+plt.legend()
+
+# Afficher tous les graphiques
 plt.show()
 
+# Graphique pour le football
+plt.figure(4)
+plt.scatter(range(len(football_trainMLP)), football_trainMLP, label='Entraînement', color='red')
+plt.scatter(range(len(football_testMLP)), football_testMLP, label='Test', color='blue')
+plt.xlabel('Échantillons')
+plt.ylabel('Résultats')
+plt.title('FootballMLP')
+plt.savefig('footballMLP.png')
+plt.legend()
 
+# Graphique pour le tennis
+plt.figure(5)
+plt.scatter(range(len(tennis_trainMLP)), tennis_trainMLP, label='Entraînement', color='red')
+plt.scatter(range(len(tennis_testMLP)), tennis_testMLP, label='Test', color='blue')
+plt.xlabel('Échantillons')
+plt.ylabel('Résultats')
+plt.title('TennisMLP')
+plt.savefig('tennisMLP.png')
+plt.legend()
+
+# Graphique pour le basket
+plt.figure(6)
+plt.scatter(range(len(basket_trainMLP)), basket_trainMLP, label='Entraînement', color='red')
+plt.scatter(range(len(basket_testMLP)), basket_testMLP, label='Test', color='blue')
+plt.xlabel('Échantillons')
+plt.ylabel('Résultats')
+plt.title('BasketMLP')
+plt.savefig('basketMLP.png')
+plt.legend()
+
+# Afficher tous les graphiques
+plt.show()
 
