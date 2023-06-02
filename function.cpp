@@ -76,8 +76,8 @@ extern "C"
         //display_matrix(data_matrix, data_matrix.rows(), data_matrix.cols());
         MatrixXd weight_matrix(neurons * neurons, hidden_Layer - 1);
         // remplir le vecteur de poids de sortie
-        for (int i = 0; i < neurons; i++)
-            weight_output.push_back(dis(gen));
+        /*for (int i = 0; i < neurons; i++)
+            weight_output.push_back(dis(gen));*/
         // remplir la matrice de poids
         for (int i = 0; i < weight_matrix.rows(); i++)
         {
@@ -132,7 +132,7 @@ extern "C"
         for (int i = 0; i < data_matrix.rows(); i++)
         {
             out += data_matrix(i, data_matrix.cols() - 1) * weight_output[i];
-            cout << out << endl;
+            //cout << out << endl;
         }
         //cout << "out : " << out << endl;
         out = tanh(out); // tanh
