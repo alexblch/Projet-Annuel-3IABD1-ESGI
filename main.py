@@ -27,6 +27,16 @@ def perceptron( hidden_Layer, neurons, random, data, bias, size, lib):
     res = func(hidden_Layer, neurons, random, data_array, bias ,size)
     return res
 
+#XOR
+val = perceptron(1, 2, 2, [1.0,1.0], 0, 2, lib)
+print("XOR for [1, 1] = ", val)
+val = perceptron(1, 2, 2, [1.0,0.0], 0, 2, lib)
+print("XOR for [1, 0] = ", val)
+val = perceptron(1, 2, 2, [0.0,1.0], 0, 2, lib)
+print("XOR for [0,1] = ", val)
+val = perceptron(1, 2, 2, [0.0,0.0], 0, 2, lib)
+print("XOR for [0, 0] = ", val)
+
 # Convertie l'image en matrice
 def get_matrice_image(img):
     img_mat = np.array(img)
@@ -90,6 +100,8 @@ for img in img_list:
     img_mat = get_matrice_image(img)
     img_flatten = img_mat.flatten()
     basketTest.append(img_flatten)
+
+
 
 
 #results of linear model
@@ -199,8 +211,6 @@ print(f'Result test basket for perceptron :{basket_testMLP}\n\n')
 
 
 #plotting
-import matplotlib.pyplot as plt
-
 import matplotlib.pyplot as plt
 # Graphique pour le football
 plt.figure(1)
