@@ -277,3 +277,4 @@ plt.legend()
 
 # Afficher tous les graphiques
 plt.show()
+
