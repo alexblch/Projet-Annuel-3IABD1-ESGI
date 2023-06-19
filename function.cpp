@@ -59,9 +59,20 @@ void matrixinfile(ofstream &file, MatrixXd mat)
     file << endl;
 }
 
+void set_matrix(MatrixXd &mat, int random)
+{
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_real_distribution<> dis(-random - 1, random + 1);
+    for (int i = 0; i < mat.rows(); i++)
+    {
+        for (int j = 0; j < mat.cols(); j++)
+            mat(i, j) = int(dis(gen));
+    }
+}
+
 extern "C"
 {
-
     double perceptron(int hidden_Layer, int neurons, int random, double *data, int bias, int size) // fonction de sortie, perceptron multicouche
     {
         ofstream file("weight.txt");
@@ -101,13 +112,7 @@ extern "C"
         MatrixXd weight_matrix = MatrixXd::Zero(neurons * hidden_Layer, hidden_Layer - 1);
         // remplir le vecteur de poids de sortie
         // remplir la matrice de poids
-        for (int i = 0; i < weight_matrix.rows(); i++)
-        {
-            for (int j = 0; j < weight_matrix.cols(); j++)
-            {
-                weight_matrix(i, j) = int(dis(gen));
-            }
-        }
+        set_matrix(weight_matrix, random);
         if (weightfile.is_open())
         {
             matrixinfile(weightfile, weight_matrix);
