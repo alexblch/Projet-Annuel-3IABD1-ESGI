@@ -3,6 +3,8 @@
 #include <Eigen/Dense>
 #include <random>
 #include <vector>
+#include <cstdio>
+#include <fstream>
 using namespace std;
 using namespace Eigen;
 
@@ -46,43 +48,58 @@ void display_tab(double *tab, int size)
          << endl;
 }
 
+void matrixinfile(ofstream &file, MatrixXd mat)
+{
+    for (int i = 0; i < mat.rows(); i++)
+    {
+        for (int j = 0; j < mat.cols(); j++)
+            file << mat(i, j) << " ";
+        file << endl;
+    }
+    file << endl;
+}
+
 extern "C"
 {
 
     double perceptron(int hidden_Layer, int neurons, int random, double *data, int bias, int size) // fonction de sortie, perceptron multicouche
     {
-        //display_tab(data, size);
-        //data = set_Data(data, size);
-        //display_tab(data, size);
-        // random number
+        ofstream file("weight.txt");
+        ofstream matrixfile("data_matrix.txt");
+        ofstream weightfile("weight_matrix.txt");
+        data = set_Data(data, size);
+
         vector<double> weight;
         vector<double> weight_output;
         random_device rd;
         mt19937 gen(rd());
-        uniform_real_distribution<> dis(-random, random);
-        for (int i = 0; i < neurons; i++)
-        {
-            weight_output.push_back(1);
-        }
+        uniform_real_distribution<> dis(-random - 1, random + 1);
 
         int number = 0;
-        //display_vector(weight_output);
-        // cas NULL
-        // remplir le vecteur de poids
+
         for (int i = 0; i < size * neurons; i++)
         {
-            if(i % 2 == 0)
+            if ((size * neurons) / 2 > i)
                 weight.push_back(1);
             else
                 weight.push_back(-1);
         }
+        for (int i = 0; i < neurons; i++)
+            weight_output.push_back(int(dis(gen) * 100));
+        if (file.is_open())
+        {
+            file << "weight_output :" << endl;
+            for (int i = 0; i < weight_output.size(); i++)
+            {
+                file << weight_output[i] / 100 << " ";
+            }
+            file << endl;
+        }
         MatrixXd data_matrix = MatrixXd::Zero(neurons, hidden_Layer);
-        //display_vector(weight);
-        //display_matrix(data_matrix, data_matrix.rows(), data_matrix.cols());
-        MatrixXd weight_matrix = MatrixXd::Zero(neurons * hidden_Layer, hidden_Layer-1);
+        // display_vector(weight);
+        // display_matrix(data_matrix, data_matrix.rows(), data_matrix.cols());
+        MatrixXd weight_matrix = MatrixXd::Zero(neurons * hidden_Layer, hidden_Layer - 1);
         // remplir le vecteur de poids de sortie
-        /*for (int i = 0; i < neurons; i++)
-            weight_output.push_back(dis(gen));*/
         // remplir la matrice de poids
         for (int i = 0; i < weight_matrix.rows(); i++)
         {
@@ -90,6 +107,10 @@ extern "C"
             {
                 weight_matrix(i, j) = int(dis(gen));
             }
+        }
+        if (weightfile.is_open())
+        {
+            matrixinfile(weightfile, weight_matrix);
         }
         int sum = 0;
         if (hidden_Layer == 0 || neurons == 0)
@@ -104,7 +125,7 @@ extern "C"
         // remplissage de la matrice de données
         for (int i = 0; i < data_matrix.rows(); i++)
         {
-            if(i==0)
+            if (i % 2 == 0)
                 sum += bias;
             else
                 sum += bias2;
@@ -135,28 +156,25 @@ extern "C"
                 data_increment = 0;
                 sum = 0;
             }
-            //display_matrix(data_matrix, data_matrix.rows(), data_matrix.cols());
-            //display_matrix(weight_matrix, weight_matrix.rows(), weight_matrix.cols());
         }
         double out = 0;
         out += bias;
         for (int i = 0; i < data_matrix.rows(); i++)
         {
             out += data_matrix(i, data_matrix.cols() - 1) * weight_output[i];
-            //cout << out << endl;
         }
-        //cout << "out : " << out << endl;
-        out = tanh(out); // tanh
-        //cout << "tanh : " << out << endl;
-        //display_matrix(data_matrix, data_matrix.rows(), data_matrix.cols());
-        //display_matrix(weight_matrix, weight_matrix.rows(), weight_matrix.cols());
-        return out;
+        if(matrixfile.is_open())
+        {
+            matrixinfile(matrixfile, data_matrix);
+        }
+        double error = 0;
+
+        return tanh(out);
     }
 
     double linear_model(double *data, double *weight, int size, int bias)
     {
         data = set_Data(data, size);
-        //display_tab(data, size);
         double sum = 0;
         if (size == 0)
             return 404;
@@ -164,11 +182,7 @@ extern "C"
         for (int i = 0; i < size; i++)
         {
             sum += data[i] * weight[i];
-            //cout << sum << " ";
         }
-        //cout << endl;
-        /*cout << "sum : " << sum << endl;
-        cout << "tanh : " << tanh(sum) << endl;*/
         sum = tanh(sum);
         if (sum < -0.33)
             return -1;

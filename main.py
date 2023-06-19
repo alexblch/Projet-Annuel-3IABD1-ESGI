@@ -28,11 +28,11 @@ def perceptron( hidden_Layer, neurons, random, data, bias, size, lib):
     return res
 
 #XOR
-val = perceptron(1, 2, 2, [1.0,1.0], 0, 2, lib)
+val = perceptron(1, 2, 2, [255.0,255.0], 0, 2, lib)
 print("XOR for [1, 1] = ", val)
-val = perceptron(1, 2, 2, [1.0,0.0], 0, 2, lib)
+val = perceptron(1, 2, 2, [255.0,0.0], 0, 2, lib)
 print("XOR for [1, 0] = ", val)
-val = perceptron(1, 2, 2, [0.0,1.0], 0, 2, lib)
+val = perceptron(1, 2, 2, [0.0,255.0], 0, 2, lib)
 print("XOR for [0,1] = ", val)
 val = perceptron(1, 2, 2, [0.0,0.0], 0, 2, lib)
 print("XOR for [0, 0] = ", val)
