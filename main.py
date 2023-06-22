@@ -28,14 +28,15 @@ def perceptron( hidden_Layer, neurons, random, data, bias, size, lib):
     return res
 
 #XOR
-val = perceptron(1, 2, 2, [255.0,255.0], 0, 2, lib)
-print("XOR for [1, 1] = ", val)
-val = perceptron(1, 2, 2, [255.0,0.0], 0, 2, lib)
-print("XOR for [1, 0] = ", val)
-val = perceptron(1, 2, 2, [0.0,255.0], 0, 2, lib)
-print("XOR for [0,1] = ", val)
-val = perceptron(1, 2, 2, [0.0,0.0], 0, 2, lib)
+val = perceptron(1, 2, 2, [0,0], 0, 2, lib)
 print("XOR for [0, 0] = ", val)
+val = perceptron(1, 2, 2, [255,0], 0, 2, lib)
+print("XOR for [1, 0] = ", val)
+val = perceptron(1, 2, 2, [0,255], 0, 2, lib)
+print("XOR for [0,1] = ", val)
+val = perceptron(1, 2, 2, [255,255], 0, 2, lib)
+print("XOR for [1, 1] = ", val)
+
 
 # Convertie l'image en matrice
 def get_matrice_image(img):
@@ -169,14 +170,14 @@ for flatten in basketTest:
     weight = []
     
 
-print(f'Result learning foot :{football_train}\n')
-print(f'Result test foot :{football_test}\n\n')
+print(f'Result learning foot :\n{football_train}\n')
+print(f'Result test foot :\n{football_test}\n\n')
 
-print(f'Result learning tennis :{tennis_train}\n')
-print(f'Result test tennis :{tennis_test}\n\n')
+print(f'Result learning tennis :\n{tennis_train}\n')
+print(f'Result test tennis :\n{tennis_test}\n\n')
 
-print(f'Result learning basket :{basket_train}\n')
-print(f'Result test basket :{basket_test}\n\n')
+print(f'Result learning basket :\n{basket_train}\n')
+print(f'Result test basket :\n{basket_test}\n\n')
 
 data = [random.randint(-rand, rand) for i in range(20)]
 hidden_Layer = int(input("Enter a number of hidden layer: "))
@@ -200,14 +201,14 @@ for flatten in basketTest:
     basket_testMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib))
     
 
-print(f'Result learning foot for perceptron :{football_trainMLP}\n')
+print(f'Result learning foot for perceptron :\n{football_trainMLP}\n')
 print(f'Result test foot for perceptron :{football_testMLP}\n\n')
 
-print(f'Result learning tennis for perceptron :{tennis_trainMLP}\n')
-print(f'Result test tennis for perceptron :{tennis_testMLP}\n\n')
+print(f'Result learning tennis for perceptron :\n{tennis_trainMLP}\n')
+print(f'Result test tennis for perceptron :\n{tennis_testMLP}\n\n')
 
-print(f'Result learning basket for perceptron :{basket_trainMLP}\n')
-print(f'Result test basket for perceptron :{basket_testMLP}\n\n')
+print(f'Result learning basket for perceptron :\n{basket_trainMLP}\n')
+print(f'Result test basket for perceptron :\n{basket_testMLP}\n\n')
 
 
 #plotting
@@ -219,7 +220,7 @@ plt.scatter(range(len(football_test)), football_test, label='Test', color='blue'
 plt.xlabel('Échantillons')
 plt.ylabel('Résultats')
 plt.title('Football')
-plt.savefig('football.png')
+plt.savefig('./graph/football.png')
 plt.legend()
 
 # Graphique pour le tennis
@@ -229,7 +230,7 @@ plt.scatter(range(len(tennis_test)), tennis_test, label='Test', color='blue')
 plt.xlabel('Échantillons')
 plt.ylabel('Résultats')
 plt.title('Tennis')
-plt.savefig('tennis.png')
+plt.savefig('./graph/tennis.png')
 plt.legend()
 
 # Graphique pour le basket
@@ -239,7 +240,7 @@ plt.scatter(range(len(basket_test)), basket_test, label='Test', color='blue')
 plt.xlabel('Échantillons')
 plt.ylabel('Résultats')
 plt.title('Basket')
-plt.savefig('basket.png')
+plt.savefig('./graph/basket.png')
 plt.legend()
 
 # Afficher tous les graphiques
@@ -252,7 +253,7 @@ plt.scatter(range(len(football_testMLP)), football_testMLP, label='Test', color=
 plt.xlabel('Échantillons')
 plt.ylabel('Résultats')
 plt.title('FootballMLP')
-plt.savefig('footballMLP.png')
+plt.savefig('./graph/footballMLP.png')
 plt.legend()
 
 # Graphique pour le tennis
@@ -262,7 +263,7 @@ plt.scatter(range(len(tennis_testMLP)), tennis_testMLP, label='Test', color='blu
 plt.xlabel('Échantillons')
 plt.ylabel('Résultats')
 plt.title('TennisMLP')
-plt.savefig('tennisMLP.png')
+plt.savefig('./graph/tennisMLP.png')
 plt.legend()
 
 # Graphique pour le basket
@@ -272,7 +273,7 @@ plt.scatter(range(len(basket_testMLP)), basket_testMLP, label='Test', color='blu
 plt.xlabel('Échantillons')
 plt.ylabel('Résultats')
 plt.title('BasketMLP')
-plt.savefig('basketMLP.png')
+plt.savefig('./graph/basketMLP.png')
 plt.legend()
 
 # Afficher tous les graphiques

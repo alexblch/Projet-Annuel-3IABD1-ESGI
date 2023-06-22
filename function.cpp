@@ -59,6 +59,13 @@ void matrixinfile(ofstream &file, MatrixXd mat)
     file << endl;
 }
 
+void vectorinfile(ofstream &file, vector<double> vec)
+{
+    for (int i = 0; i < vec.size(); i++)
+        file << vec[i] << " ";
+    file << endl;
+}
+
 void set_matrix(MatrixXd &mat, int random)
 {
     random_device rd;
@@ -71,45 +78,78 @@ void set_matrix(MatrixXd &mat, int random)
     }
 }
 
+void file_data(double *data, int size, ofstream &file)
+{
+    for (int i = 0; i < size; i++)
+        file << data[i] << " ";
+    file << endl;
+}
+
+void get_data_infile(ifstream &file, double *data, int size)
+{
+    for (int i = 0; i < size; i++)
+        file >> data[i];
+}
+
+void set_vector_weight(vector<double> &weight, int size, int neurons, int random)
+{
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_real_distribution<> dis(-random - 1, random + 1);
+    for (int i = 0; i < size * neurons; i++)
+    {
+        if (i == 0 || i == size * neurons - 1)
+            weight.push_back(1);
+        else
+        {
+            if (neurons < 3)
+                weight.push_back(0);
+            else
+                weight.push_back(int(dis(gen)));
+        }
+    }
+}
+
 extern "C"
 {
     double perceptron(int hidden_Layer, int neurons, int random, double *data, int bias, int size) // fonction de sortie, perceptron multicouche
     {
-        ofstream file("weight.txt");
-        ofstream matrixfile("data_matrix.txt");
-        ofstream weightfile("weight_matrix.txt");
+        MatrixXd data_matrix = MatrixXd::Zero(neurons, hidden_Layer);
+        MatrixXd weight_matrix = MatrixXd::Zero(neurons * hidden_Layer, hidden_Layer - 1);
+        ofstream datafile("file/data.txt");
+        ofstream file("file/weight.txt");
+        ofstream matrixfile("file/data_matrix.txt");
+        ofstream weightfile("file/weight_matrix.txt");
+        ofstream weight_outputfile("file/weight_output.txt");
+        ofstream results("file/results.txt");
         data = set_Data(data, size);
 
         vector<double> weight;
+        set_vector_weight(weight, size, neurons, random);
         vector<double> weight_output;
+        for (int i = 0; i < neurons; i++)
+            weight_output.push_back(1);
+        if (datafile.is_open())
+        {
+            file_data(data, size, datafile);
+        }
+
         random_device rd;
         mt19937 gen(rd());
         uniform_real_distribution<> dis(-random - 1, random + 1);
 
         int number = 0;
 
-        for (int i = 0; i < size * neurons; i++)
-        {
-            if ((size * neurons) / 2 > i)
-                weight.push_back(1);
-            else
-                weight.push_back(-1);
-        }
-        for (int i = 0; i < neurons; i++)
-            weight_output.push_back(int(dis(gen) * 100));
         if (file.is_open())
         {
-            file << "weight_output :" << endl;
-            for (int i = 0; i < weight_output.size(); i++)
-            {
-                file << weight_output[i] / 100 << " ";
-            }
-            file << endl;
+            vectorinfile(file, weight);
         }
-        MatrixXd data_matrix = MatrixXd::Zero(neurons, hidden_Layer);
-        // display_vector(weight);
-        // display_matrix(data_matrix, data_matrix.rows(), data_matrix.cols());
-        MatrixXd weight_matrix = MatrixXd::Zero(neurons * hidden_Layer, hidden_Layer - 1);
+        
+        if (weight_outputfile.is_open())
+        {
+            vectorinfile(weight_outputfile, weight_output);
+        }
+
         // remplir le vecteur de poids de sortie
         // remplir la matrice de poids
         set_matrix(weight_matrix, random);
@@ -126,14 +166,10 @@ extern "C"
         sum = 0;
         int increment = 0;
         int data_increment = 0;
-        int bias2 = -(bias);
         // remplissage de la matrice de données
         for (int i = 0; i < data_matrix.rows(); i++)
         {
-            if (i % 2 == 0)
-                sum += bias;
-            else
-                sum += bias2;
+            sum += bias;
             while (data_increment < size)
             {
                 sum += data[data_increment] * weight[increment];
@@ -164,11 +200,15 @@ extern "C"
         }
         double out = 0;
         out += bias;
+        if (results.is_open())
+        {
+            matrixinfile(results, data_matrix);
+        }
         for (int i = 0; i < data_matrix.rows(); i++)
         {
             out += data_matrix(i, data_matrix.cols() - 1) * weight_output[i];
         }
-        if(matrixfile.is_open())
+        if (matrixfile.is_open())
         {
             matrixinfile(matrixfile, data_matrix);
         }
