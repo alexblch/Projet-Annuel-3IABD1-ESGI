@@ -41,6 +41,7 @@
     "iostream": "cpp",
     "cmath": "cpp",
     "xutility": "cpp",
-    "ostream": "cpp"
+    "ostream": "cpp",
+    "iosfwd": "cpp"
   }
 }

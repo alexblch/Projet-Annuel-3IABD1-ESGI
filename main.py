@@ -27,6 +27,15 @@ def perceptron( hidden_Layer, neurons, random, data, bias, size, lib):
     res = func(hidden_Layer, neurons, random, data_array, bias ,size)
     return res
 
+def get_file(hidden_Layer, neurons, random, lib):
+    func = lib.create_file
+    func.restype = None
+    func.argtypes = (ctypes.c_int, ctypes.c_int, ctypes.c_int)
+    func(hidden_Layer, neurons, random)
+
+
+get_file(1, 2, 70, lib)
+
 #XOR
 val = perceptron(1, 2, 2, [0,0], 0, 2, lib)
 print("XOR for [0, 0] = ", val)
@@ -136,7 +145,7 @@ weight = []
 
 bias = 1
 
-for flatten in footTrain:
+"""for flatten in footTrain:
     for i in range(len(flatten)):
         weight.append(random.randint(-rand, rand))
     football_train.append(linear_model(flatten, weight, len(flatten), bias, lib))
@@ -177,13 +186,14 @@ print(f'Result learning tennis :\n{tennis_train}\n')
 print(f'Result test tennis :\n{tennis_test}\n\n')
 
 print(f'Result learning basket :\n{basket_train}\n')
-print(f'Result test basket :\n{basket_test}\n\n')
+print(f'Result test basket :\n{basket_test}\n\n')"""
 
 data = [random.randint(-rand, rand) for i in range(20)]
 hidden_Layer = int(input("Enter a number of hidden layer: "))
 neurons = int(input("Enter a number of neurons: "))
 random = int(input("Enter a number of random: "))
 
+get_file(hidden_Layer, neurons, random,lib)
 
 for flatten in footTrain:
     football_trainMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib))
@@ -214,40 +224,12 @@ print(f'Result test basket for perceptron :\n{basket_testMLP}\n\n')
 #plotting
 import matplotlib.pyplot as plt
 # Graphique pour le football
-plt.figure(1)
-plt.scatter(range(len(football_train)), football_train, label='Entraînement', color='red')
-plt.scatter(range(len(football_test)), football_test, label='Test', color='blue')
-plt.xlabel('Échantillons')
-plt.ylabel('Résultats')
-plt.title('Football')
-plt.savefig('./graph/football.png')
-plt.legend()
 
-# Graphique pour le tennis
-plt.figure(2)
-plt.scatter(range(len(tennis_train)), tennis_train, label='Entraînement', color='red')
-plt.scatter(range(len(tennis_test)), tennis_test, label='Test', color='blue')
-plt.xlabel('Échantillons')
-plt.ylabel('Résultats')
-plt.title('Tennis')
-plt.savefig('./graph/tennis.png')
-plt.legend()
 
-# Graphique pour le basket
-plt.figure(3)
-plt.scatter(range(len(basket_train)), basket_train, label='Entraînement', color='red')
-plt.scatter(range(len(basket_test)), basket_test, label='Test', color='blue')
-plt.xlabel('Échantillons')
-plt.ylabel('Résultats')
-plt.title('Basket')
-plt.savefig('./graph/basket.png')
-plt.legend()
 
-# Afficher tous les graphiques
-plt.show()
 
 # Graphique pour le football
-plt.figure(4)
+plt.figure(1)
 plt.scatter(range(len(football_trainMLP)), football_trainMLP, label='Entraînement', color='red')
 plt.scatter(range(len(football_testMLP)), football_testMLP, label='Test', color='blue')
 plt.xlabel('Échantillons')
@@ -257,7 +239,7 @@ plt.savefig('./graph/footballMLP.png')
 plt.legend()
 
 # Graphique pour le tennis
-plt.figure(5)
+plt.figure(2)
 plt.scatter(range(len(tennis_trainMLP)), tennis_trainMLP, label='Entraînement', color='red')
 plt.scatter(range(len(tennis_testMLP)), tennis_testMLP, label='Test', color='blue')
 plt.xlabel('Échantillons')
@@ -267,7 +249,7 @@ plt.savefig('./graph/tennisMLP.png')
 plt.legend()
 
 # Graphique pour le basket
-plt.figure(6)
+plt.figure(3)
 plt.scatter(range(len(basket_trainMLP)), basket_trainMLP, label='Entraînement', color='red')
 plt.scatter(range(len(basket_testMLP)), basket_testMLP, label='Test', color='blue')
 plt.xlabel('Échantillons')
