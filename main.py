@@ -27,14 +27,14 @@ def perceptron( hidden_Layer, neurons, random, data, bias, size, lib):
     res = func(hidden_Layer, neurons, random, data_array, bias ,size)
     return res
 
-def get_file(hidden_Layer, neurons, random, lib):
+def get_file(hidden_Layer, neurons, random, size_image, lib):
     func = lib.create_file
     func.restype = None
-    func.argtypes = (ctypes.c_int, ctypes.c_int, ctypes.c_int)
-    func(hidden_Layer, neurons, random)
+    func.argtypes = (ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int)
+    func(hidden_Layer, neurons, random, size_image)
 
-
-get_file(1, 2, 70, lib)
+rand = int(input("Enter a number of random: "))
+get_file(1, 2, rand, 2, lib)
 
 #XOR
 val = perceptron(1, 2, 2, [0,0], 0, 2, lib)
@@ -59,7 +59,7 @@ def get_img_list(directory):
     for img_name in os.listdir(img_dir):
         img_path = os.path.join(img_dir, img_name)
         img = Image.open(img_path)
-        img_resized = img.resize((64, 64))
+        img_resized = img.resize((32,32))
         img_black_white = img_resized.convert('L')
         
         img_list.append(img_black_white)
@@ -136,9 +136,9 @@ tennis_testMLP = []
 basket_trainMLP = []
 basket_testMLP = []
 
+#print(f'football train : \n{footTrain}')
 
 
-rand = int(input("Enter a number of random: "))
 
 data = []
 weight = []
@@ -192,8 +192,9 @@ data = [random.randint(-rand, rand) for i in range(20)]
 hidden_Layer = int(input("Enter a number of hidden layer: "))
 neurons = int(input("Enter a number of neurons: "))
 random = int(input("Enter a number of random: "))
+size = 32*32
 
-get_file(hidden_Layer, neurons, random,lib)
+get_file(hidden_Layer, neurons, random, size, lib)
 
 for flatten in footTrain:
     football_trainMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib))

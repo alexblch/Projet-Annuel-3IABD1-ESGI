@@ -130,7 +130,7 @@ void set_vector_weight(vector<double> &weight, int size, int neurons, int random
 }
 
 
-void stochastic_gradient_descent(int hidden_Layer, int neurons, MatrixXd data_matrix, MatrixXd weight_matrix, vector<double> weight, vector<double> weight_output, double out)
+void stochastic_gradient_descent(int hidden_Layer, int neurons, MatrixXd data_matrix, MatrixXd weight_matrix, vector<double> weight, vector<double> weight_output, double out, double predict)
 {
     double delta = 1 - out;
     return;
@@ -138,8 +138,8 @@ void stochastic_gradient_descent(int hidden_Layer, int neurons, MatrixXd data_ma
 
 extern "C"
 {
-
-    void create_file(int hidden_layers, int neurons, int random)
+    //stock datas in file, facilitate for stochastic descent gradient 
+    void create_file(int hidden_layers, int neurons, int random, int size_image)
     {
         ofstream file("file/weight.txt");
         ofstream weightfile("file/weight_matrix.txt");
@@ -151,18 +151,26 @@ extern "C"
         MatrixXd weight_matrix = MatrixXd::Zero(neurons * hidden_layers, hidden_layers - 1);
         std::vector<double> weight;
         std::vector<double> weight_output;
-        for (int i = 0; i < neurons * hidden_layers; i++)
-            weight.push_back(int(dis(gen)));
+        for (int i = 0; i < neurons * size_image; i++)
+        {
+            weight.push_back(dis(gen));
+            if(weight[i] == 0)
+                weight[i] = 1;
+        }
         if(file.is_open())
             vectorinfile(file, weight);
         for (int i = 0; i < neurons; i++)
-            weight_output.push_back(int(dis(gen)));
+        {
+            weight_output.push_back(dis(gen));
+            if(weight_output[i] == 0)
+                weight_output[i] = 1;
+        }
         if(weight_outputfile.is_open())
             vectorinfile(weight_outputfile, weight_output);
         for (int i = 0; i < weight_matrix.rows(); i++)
         {
             for (int j = 0; j < weight_matrix.cols(); j++)
-                weight_matrix(i, j) = int(dis(gen));
+                weight_matrix(i, j) = dis(gen);
         }
         //stock in file
         if (weightfile.is_open())
@@ -178,6 +186,14 @@ extern "C"
         ifstream weightfile("file/weight_matrix.txt");
         ifstream weight_outputfile("file/weight_output.txt");
         ifstream weight_matrixfile("file/weight_matrix.txt");
+
+        ofstream file_data_image("file/data.txt");
+        if (file_data_image.is_open())
+        {
+            file_data(data, size, file_data_image);
+        }
+        
+        
 
         MatrixXd data_matrix = MatrixXd::Zero(neurons, hidden_Layer);
         MatrixXd weight_matrix = MatrixXd::Zero(neurons * hidden_Layer, hidden_Layer - 1);
@@ -203,8 +219,6 @@ extern "C"
         int number = 0;
 
 
-        // remplir le vecteur de poids de sortie
-        // remplir la matrice de poids
         int sum = 0;
         if (hidden_Layer == 0 || neurons == 0)
         {
@@ -214,6 +228,10 @@ extern "C"
         sum = 0;
         int increment = 0;
         int data_increment = 0;
+
+
+
+        //debut de la propagation
         // remplissage de la matrice de données
         for (int i = 0; i < data_matrix.rows(); i++)
         {
@@ -228,6 +246,9 @@ extern "C"
             data_increment = 0;
             sum = 0;
         }
+
+
+
         // display_dataMatrix();
         // remplissage des autres couches
         for (int i = 1; i < data_matrix.cols(); i++)
@@ -246,14 +267,20 @@ extern "C"
                 sum = 0;
             }
         }
+
+
         double out = 0;
         out += bias;
         for (int i = 0; i < data_matrix.rows(); i++)
         {
             out += data_matrix(i, data_matrix.cols() - 1) * weight_output[i];
         }
-        double error = 0;
 
+
+        double error = 1 - tanh(out);
+        ofstream datafile("file/data_matrix.txt");
+        if(datafile.is_open())
+            matrixinfile(datafile, data_matrix);
         return tanh(out);
     }
 
