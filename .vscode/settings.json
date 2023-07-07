@@ -42,6 +42,10 @@
     "cmath": "cpp",
     "xutility": "cpp",
     "ostream": "cpp",
-    "iosfwd": "cpp"
+    "iosfwd": "cpp",
+    "fstream": "cpp",
+    "algorithm": "cpp",
+    "xiosbase": "cpp",
+    "xlocale": "cpp"
   }
 }

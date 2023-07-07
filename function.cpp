@@ -5,6 +5,7 @@
 #include <vector>
 #include <cstdio>
 #include <fstream>
+#include <cmath>
 using namespace std;
 using namespace Eigen;
 
@@ -139,7 +140,7 @@ void stochastic_gradient_descent(int hidden_Layer, int neurons, MatrixXd data_ma
 extern "C"
 {
     //stock datas in file, facilitate for stochastic descent gradient 
-    void create_file(int hidden_layers, int neurons, int random, int size_image)
+    void create_file(int hidden_layers, int neurons, int random, int size_image, int nbClass)
     {
         ofstream file("file/weight.txt");
         ofstream weightfile("file/weight_matrix.txt");
@@ -159,7 +160,7 @@ extern "C"
         }
         if(file.is_open())
             vectorinfile(file, weight);
-        for (int i = 0; i < neurons; i++)
+        for (int i = 0; i < neurons * nbClass; i++)
         {
             weight_output.push_back(dis(gen));
             if(weight_output[i] == 0)
@@ -180,7 +181,7 @@ extern "C"
     }
 
 
-    double perceptron(int hidden_Layer, int neurons, int random, double *data, int bias, int size) // fonction de sortie, perceptron multicouche
+    double perceptron(int hidden_Layer, int neurons, int random, double *data, int bias, int size, int nbClass) // fonction de sortie, perceptron multicouche
     {
         ifstream file("file/weight.txt");
         ifstream weightfile("file/weight_matrix.txt");
@@ -188,16 +189,18 @@ extern "C"
         ifstream weight_matrixfile("file/weight_matrix.txt");
 
         ofstream file_data_image("file/data.txt");
-        if (file_data_image.is_open())
-        {
-            file_data(data, size, file_data_image);
-        }
+        
         
         
 
         MatrixXd data_matrix = MatrixXd::Zero(neurons, hidden_Layer);
         MatrixXd weight_matrix = MatrixXd::Zero(neurons * hidden_Layer, hidden_Layer - 1);
         data = set_Data(data, size);
+        if (file_data_image.is_open())
+        {
+            file_data(data, size, file_data_image);
+        }
+
         if (weight_matrixfile.is_open())
         {
             getMatrixfromfile(weight_matrixfile, weight_matrix, weight_matrix.rows(), weight_matrix.cols());
@@ -242,7 +245,7 @@ extern "C"
                 data_increment++;
                 increment++;
             }
-            data_matrix(i, 0) = tanh(sum);
+            data_matrix(i, 0) = std::tanh(sum);
             data_increment = 0;
             sum = 0;
         }
@@ -262,26 +265,43 @@ extern "C"
                     data_increment++;
                     increment++;
                 }
-                data_matrix(j, i) = tanh(sum);
+                data_matrix(j, i) = std::tanh(sum);
                 data_increment = 0;
                 sum = 0;
             }
         }
 
-
-        double out = 0;
-        out += bias;
-        for (int i = 0; i < data_matrix.rows(); i++)
+        double* out = new double[nbClass];
+        for (int i = 0; i < nbClass; i++)
         {
-            out += data_matrix(i, data_matrix.cols() - 1) * weight_output[i];
+            out[i] = bias;
         }
+        increment = 0;
+        data_increment = 0;
+        for (int i = 0; i < nbClass; i++)
+        {
+            for(int j = 0; j < data_matrix.rows(); j++)
+            {
+                out[i] += data_matrix(j, data_matrix.cols() - 1) * weight_output[increment];
+                increment++;
+            }
+            out[i] = std::tanh(out[i]);
+        }
+        std::ofstream out_class("file/outclass.txt");
+        if(out_class.is_open())
+            file_data(out, nbClass, out_class);
 
-
-        double error = 1 - tanh(out);
         ofstream datafile("file/data_matrix.txt");
         if(datafile.is_open())
             matrixinfile(datafile, data_matrix);
-        return tanh(out);
+        ofstream databefore("file/databefore.txt");
+        if(databefore.is_open())
+            databefore << out << endl;
+        //out = stdtanh(out);
+        ofstream outfile("file/output.txt");
+        if(outfile.is_open())
+            outfile << out << endl;
+        return out[0];
     }
 
     double linear_model(double *data, double *weight, int size, int bias)
