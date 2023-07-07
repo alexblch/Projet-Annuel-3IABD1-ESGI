@@ -239,10 +239,9 @@ extern "C"
         for (int i = 0; i < data_matrix.rows(); i++)
         {
             sum += bias;
-            while (data_increment < size)
+            for(int j = 0; j < size; j++)
             {
-                sum += data[data_increment] * weight[increment];
-                data_increment++;
+                sum += data[j] * weight[increment];
                 increment++;
             }
             data_matrix(i, 0) = std::tanh(sum);
