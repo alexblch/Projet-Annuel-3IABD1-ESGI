@@ -268,22 +268,31 @@ extern "C"
                 //data_matrix(j, i) += bias;
                 for (int k = 0; k < data_matrix.rows(); k++)
                 {
-                    sum += data_matrix(k, i - 1) * weight_matrix(increment, i - 1);
+                    data_matrix(j, i) += data_matrix(k, i - 1) * weight_matrix(increment, i - 1);
                     increment++;
                 }
-                data_matrix(j, i) = std::tanh(sum);
+                data_matrix(j, i) = std::tanh(data_matrix(j, i));
                 sum = 0;
                 increment = 0;
             }
         }
-
+        
         double *out = new double[nbClass];
         for (int i = 0; i < nbClass; i++)
         {
             out[i] = bias;
         }
+        cout << "out avant :" << endl;
+        for(int i = 0 ; i < nbClass ; i++)
+        {
+            cout << out[i] << endl;
+        }
+        //affiche dernière colonne de data_matrix
+        for(int i = 0 ; i < data_matrix.rows() ; i++)
+        {
+            cout << data_matrix(i, data_matrix.cols() - 1) << endl;
+        }
         increment = 0;
-        data_increment = 0;
         for (int i = 0; i < nbClass; i++)
         {
             for (int j = 0; j < data_matrix.rows(); j++)
@@ -291,7 +300,13 @@ extern "C"
                 out[i] += data_matrix(j, data_matrix.cols() - 1) * weight_output[increment];
                 increment++;
             }
+            cout << "out[" << i << "] = " << out[i] << endl;
             out[i] = std::tanh(out[i]);
+        }
+        cout << "out apres :" << endl;
+        for(int i = 0 ; i < nbClass ; i++)
+        {
+            cout << out[i] << endl;
         }
         std::ofstream out_class("file/outclass.txt");
         if (out_class.is_open())
@@ -303,7 +318,12 @@ extern "C"
         datafile.close();
         ofstream databefore("file/databefore.txt");
         if (databefore.is_open())
-            databefore << out << endl;
+        {
+            for (int i = 0; i < nbClass; i++)
+            {
+                databefore << out[i] << endl;
+            }
+        }
         databefore.close();
         // out = stdtanh(out);
         ofstream outfile("file/output.txt");
