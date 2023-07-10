@@ -62,9 +62,9 @@ def get_img_list(directory):
         img = Image.open(img_path)
         img_resized = img.resize((32,32))
         img_black_white = img_resized.convert('L')
-        
         img_list.append(img_black_white)
     return img_list
+
 #get images
 footTrain = []
 footTest = []
