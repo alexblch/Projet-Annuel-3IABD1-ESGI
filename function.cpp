@@ -133,7 +133,7 @@ void set_vector_weight(vector<double> &weight, int size, int neurons, int random
     }
 }
 
-void retropropagation(int hidden_Layer, int neurons, MatrixXd &data_matrix, MatrixXd &weight_matrix, vector<double> &weight, vector<double> &weight_output, double *out, int nbClass, int *prediction)
+void retropropagation(int hidden_Layer, int neurons, double *data, MatrixXd &data_matrix, MatrixXd &weight_matrix, vector<double> &weight, vector<double> &weight_output, double *out, int nbClass, int *prediction, int size, double learning_rate)
 {
     double *delta = new double[nbClass];
     for(int i = 0; i < nbClass; i++)
@@ -166,6 +166,36 @@ void retropropagation(int hidden_Layer, int neurons, MatrixXd &data_matrix, Matr
     }
     ofstream deltas("file/delta.txt");
     matrixinfile(deltas, delta_matrix);
+    // stochastic gradient descent
+    for(int i = 0 ; i < neurons ; i++)
+    {
+        for(int j = 0 ; j < size ; j++)
+        {
+            weight[i * size + j] -= learning_rate * data[j] * delta_matrix(i, 0);
+        }
+    }
+    for (int i = 0; i < neurons; i++)
+    {
+        for (int j = 0; j < hidden_Layer - 1; j++)
+        {
+            weight_matrix(i * neurons + j, j) -= learning_rate * data_matrix(i, j) * delta_matrix(i, j+1);
+        }
+    }
+    for(int i = 0 ; i < nbClass ; i++)
+    {
+        for(int j = 0 ; j < neurons ; j++)
+        {
+            weight_output[i * neurons + j] -= learning_rate * data_matrix(j, hidden_Layer-1) * delta[i];
+        }
+    }
+    std::ofstream weightfile("file/weight.txt");
+    vectorinfile(weightfile, weight);
+
+    std::ofstream weight_matrixfile("file/weight_matrix.txt");
+    matrixinfile(weight_matrixfile, weight_matrix);
+
+    std::ofstream weight_outputfile("file/weight_output.txt");
+    vectorinfile(weight_outputfile, weight_output);
 }
 
 extern "C"
@@ -211,7 +241,7 @@ extern "C"
         file.close();
     }
 
-    double perceptron(int hidden_Layer, int neurons, int random, double *data, int bias, int size, int nbClass, int *prediction) // fonction de sortie, perceptron multicouche
+    double perceptron(int hidden_Layer, int neurons, int random, double *data, int bias, int size, int nbClass, int *prediction, double learning_rate) // fonction de sortie, perceptron multicouche
     {
         ifstream file("file/weight.txt");
         ifstream weightfile("file/weight_matrix.txt");
@@ -320,7 +350,7 @@ extern "C"
         datafile.close();
 
         ofstream outfile("file/output.txt");
-        retropropagation(hidden_Layer, neurons, data_matrix, weight_matrix, weight, weight_output, out, nbClass, prediction);
+        retropropagation(hidden_Layer, neurons, data, data_matrix, weight_matrix, weight, weight_output, out, nbClass, prediction, size, learning_rate);
         return out[0];
     }
 

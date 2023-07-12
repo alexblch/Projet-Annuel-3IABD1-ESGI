@@ -19,13 +19,13 @@ def linear_model(data, weight, size, bias, lib):
     return res
 
 
-def perceptron( hidden_Layer, neurons, random, data, bias, size, lib, nb_Class, prediction):
+def perceptron( hidden_Layer, neurons, random, data, bias, size, lib, nb_Class, prediction, learning_rate):
     func = lib.perceptron
     func.restype = ctypes.c_double
-    func.argtypes = (ctypes.c_int, ctypes.c_int, ctypes.c_int ,ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_int))
+    func.argtypes = (ctypes.c_int, ctypes.c_int, ctypes.c_int ,ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.c_double)
     data_array = (ctypes.c_double * len(data))(*data)
     prediction_array = (ctypes.c_int * len(prediction))(*prediction)
-    res = func(hidden_Layer, neurons, random, data_array, bias ,size, nb_Class, prediction_array)
+    res = func(hidden_Layer, neurons, random, data_array, bias ,size, nb_Class, prediction_array, learning_rate)
     return res
 
 def get_file(hidden_Layer, neurons, random, size_image, lib, nb_Class):
@@ -38,15 +38,23 @@ nb_Class = 1
 rand = int(input("Enter a number of random: "))
 get_file(1, 2, rand, 2, lib, nb_Class)
 
+learning_rate = 0.15
+
 #XOR
-val = perceptron(1, 2, 2, [0.0,0.0], 0, 2, lib, nb_Class, [-1])
-print("XOR for [0, 0] = ", val)
-val = perceptron(1, 2, 2, [255.0,0], 0, 2, lib, nb_Class, [1])
-print("XOR for [1, 0] = ", val)
-val = perceptron(1, 2, 2, [0.0,255.0], 0, 2, lib, nb_Class, [1])
-print("XOR for [0,1] = ", val)
-val = perceptron(1, 2, 2, [255.0,255.0], 0, 2, lib, nb_Class, [-1])
-print("XOR for [1, 1] = ", val)
+for i in range(1000):
+    val = perceptron(1, 2, 2, [0.0,0.0], 0, 2, lib, nb_Class, [-1], learning_rate)
+    if(i == 999):
+        print("XOR for [0, 0] = ", val)
+    val = perceptron(1, 2, 2, [255.0,0], 0, 2, lib, nb_Class, [1], learning_rate)
+    if(i == 999):
+        print("XOR for [1, 0] = ", val)
+    val = perceptron(1, 2, 2, [0.0,255.0], 0, 2, lib, nb_Class, [1], learning_rate)
+    if(i == 999):
+        print("XOR for [0, 1] = ", val)
+    val = perceptron(1, 2, 2, [255.0,255.0], 0, 2, lib, nb_Class, [-1], learning_rate)
+    if(i == 999):
+        print("XOR for [1, 1] = ", val)
+    print("Iteration ", i, " done")
 
 nb_Class = 3
 # Convertie l'image en matrice
@@ -199,19 +207,19 @@ size = 32*32
 get_file(hidden_Layer, neurons, random, size, lib, nb_Class)
 print(footTrain)
 for flatten in footTrain:
-    football_trainMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [1,-1,-1]))
+    football_trainMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [1,-1,-1], learning_rate))
 for flatten in footTest:
-    football_testMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [1,-1,-1]))
+    football_testMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [1,-1,-1], learning_rate))
     
 for flatten in tennisTrain:
-    tennis_trainMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [-1,1,-1]))
+    tennis_trainMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [-1,1,-1], learning_rate))
 for flatten in tennisTest:
-    tennis_testMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [-1,1,-1]))
+    tennis_testMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [-1,1,-1], learning_rate))
     
 for flatten in basketTrain:
-    basket_trainMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [-1,-1,1]))
+    basket_trainMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [-1,-1,1], learning_rate))
 for flatten in basketTest:
-    basket_testMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [-1,-1,1]))
+    basket_testMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [-1,-1,1], learning_rate))
     
 
 print(f'Result learning foot for perceptron :\n{football_trainMLP}\n')
