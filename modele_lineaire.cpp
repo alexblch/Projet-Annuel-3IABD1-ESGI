@@ -13,7 +13,7 @@
 
 extern "C" {
 
-DLLEXPORT int getRandomValue(int max) {
+DLLEXPORT int getRandomIntValue(int max) {
     std::random_device rd;
     std::mt19937 generator(rd());
     std::uniform_int_distribution<int> distribution(0, max);
@@ -22,9 +22,18 @@ DLLEXPORT int getRandomValue(int max) {
     return randomValue;
 }
 
+DLLEXPORT float get_random_float_value(float max) {
+    std::random_device rd;
+    std::mt19937 generator(rd());
+    std::uniform_real_distribution<float> distribution(0, max);
+
+    float randomValue = distribution(generator);
+    return randomValue;
+}
+
 
 DLLEXPORT int
-set_label_two_output(int index, int fooball_img_list_size, int basket_img_list_size, std::string className) {
+set_label_two_output(int index, int fooball_img_list_size, int basket_img_list_size, const std::string& className) {
 
     std::string class_img;
     if (index >= 0 && index <= fooball_img_list_size - 1) {
@@ -59,7 +68,11 @@ DLLEXPORT int *set_label_three_output(int fooball_img_list_size, int basket_img_
 
 
 DLLEXPORT float sigmoid(float output) {
+    //std::cout << output << std::endl;
+    //std::cout <<output << std::endl;
     float exp = expf(output);
+    //std::cout <<"exp : " << exp << std::endl;
+    //std::cout << "sigmoid : " << 1 / (1 + (1 / exp)) << std::endl;
     return 1 / (1 + (1 / exp));
 }
 
@@ -72,12 +85,19 @@ DLLEXPORT int get_class_two_output(float output) {
 
 }
 
+DLLEXPORT float normalize_input(float input, float min_value, float max_value) {
+    //std::cout << "normalize_niput " << (input - min_value) / (max_value - min_value) << std::endl;
+    return (input - min_value) / (max_value - min_value);
+}
+
 DLLEXPORT float get_weighted_sum(const int *input, const float *weight, int img_size) {
     float weighted_sum = 0;
     for (int i = 0; i < img_size; i++) {
-        weighted_sum += input[i] * weight[i];
+        //std::cout << "input " << input[i] << " weight " << weight[i] << std::endl;
+        weighted_sum += normalize_input(input[i], 0.0, 255.0) * weight[i];
     }
-    return weighted_sum;
+    //std::cout << "weighted_sum " << weighted_sum << std::endl;
+    return weighted_sum + 1;
 }
 
 DLLEXPORT int
@@ -86,6 +106,9 @@ get_class_three_output(int *img, float *weight_football, float *weight_basket, f
     output[0] = sigmoid(get_weighted_sum(img, weight_football, img_size));
     output[1] = sigmoid(get_weighted_sum(img, weight_basket, img_size));
     output[2] = sigmoid(get_weighted_sum(img, weight_tennis, img_size));
+    /*std::cout << output[0] << std::endl;
+    std::cout << output[1] << std::endl;
+    std::cout << output[2] << std::endl;*/
 
     int index_biggest_output = 0;
     for (int i = 1; i < 3; i++) {
@@ -100,7 +123,8 @@ get_class_three_output(int *img, float *weight_football, float *weight_basket, f
 DLLEXPORT float *initialize_weight(int size) {
     auto *weight_list = new float[size];
     for (int i = 0; i < size; i++) {
-        weight_list[i] = static_cast<float>(getRandomValue(1));
+        weight_list[i] = get_random_float_value(0.0000002);
+        //std::cout << "poid : " << weight_list[i] << std::endl;
     }
     return weight_list;
 }
@@ -110,7 +134,7 @@ DLLEXPORT int get_output_and_set_weight(int *input, float *weight, int weight_li
     float weighted_sum = get_weighted_sum(input, weight, weight_list_size);
     int output = get_class_two_output(weighted_sum);
     for (int i = 0; i < weight_list_size; i++) {
-        weight[i] = weight[i] + 0.01 * (label - output) * input[i];
+        weight[i] = weight[i] + 0.0001 * (label - output) * input[i];
     }
     return output;
 }
@@ -125,11 +149,10 @@ DLLEXPORT void save_modele(float *weight_list, int list_size, std::string path) 
         outputFile << weight_list[i] << std::endl;
     }
     outputFile.close();
-    std::cout << "File written successfully." << std::endl;
+    //std::cout << "File written successfully." << std::endl;
 }
 
 DLLEXPORT float *load_model(int nb_weight, const std::string &path) {
-    int nb = 54;
     auto *weight_list = new float[nb_weight];
     std::ifstream inputFile(path);
     if (!inputFile) {
@@ -137,16 +160,16 @@ DLLEXPORT float *load_model(int nb_weight, const std::string &path) {
         return nullptr;
     }
 
+    //std::cout << "nb weight" << nb_weight << std::endl;
+
     for (int i = 0; i < nb_weight; i++) {
         if (!(inputFile >> weight_list[i])) {
             std::cerr << "Erreur de lecture du fichier." << std::endl;
+            std::cerr << "poids erreur : " << i << std::endl;
             delete[] weight_list;
             return nullptr;
         }
-    }
-
-    for (int i = 0; i < nb_weight; i++) {
-        std::cout << weight_list[i] << std::endl;
+        //std::cout << "index poids" << i << std::endl;
     }
     return weight_list;
 
@@ -162,19 +185,16 @@ DLLEXPORT int **
 test_linear_model(int **img_list, const int *nb_image_per_class, int img_size, const char *football_model_path,
                   const char *basket_model_path, const char *tennis_model_path) {
     //float* list = load_model(img_size+1, "C:\\Users\\desan\\Documents\\ESGI\\PA\\testLoadWeight\\weight.txt");
-    float *football_model = load_model(img_size + 1, football_model_path);
-    float *basket_model = load_model(img_size + 1, basket_model_path);
-    float *tennis_model = load_model(img_size + 1, tennis_model_path);
+    int **label_and_output = new int *[2];
+    float *football_model = load_model(img_size, football_model_path);
+    float *basket_model = load_model(img_size, basket_model_path);
+    float *tennis_model = load_model(img_size, tennis_model_path);
     int fooball_img_list_size = nb_image_per_class[0];
     int basket_img_list_size = nb_image_per_class[1];
     int tennis_img_list_size = nb_image_per_class[2];
     int img_list_size = fooball_img_list_size + basket_img_list_size + tennis_img_list_size;
-    int **label_and_output = new int *[2];
+
     int *output_list = new int[img_list_size];
-    //Ajout du biais pour chaque image
-    for (int i = 0; i < img_list_size; i++) {
-        img_list[i][img_size] = 1;
-    }
 
     for (int i = 0; i < img_list_size; i++) {
         output_list[i] = get_class_three_output(img_list[i], football_model, basket_model, tennis_model, img_size);
@@ -182,56 +202,75 @@ test_linear_model(int **img_list, const int *nb_image_per_class, int img_size, c
 
     label_and_output[0] = set_label_three_output(fooball_img_list_size, basket_img_list_size, tennis_img_list_size);
     label_and_output[1] = output_list;
+    //std::cout << "fonction terminé" << std::endl;
     return label_and_output;
 }
 
 
-DLLEXPORT float **
+DLLEXPORT int *
 train_linear_model(int **img_list, const int *size_class, int img_size, int training_iteration,
-                   const std::string file_path, const std::string &className) {
+                   const std::string &file_path, const std::string &className) {
     int nb_fooball_img_list = size_class[0];
     int nb_basket_img_list = size_class[1];
     int nb_img_list_size = size_class[2];
     int img_list_size = nb_fooball_img_list + nb_basket_img_list + nb_img_list_size;
     add_bias(img_list, img_list_size, img_size);
-    auto **weight_and_output = new float *[2];
-    float *weight_list = initialize_weight(img_size + 1);
-    auto *output_list = new float[training_iteration];
+    float *weight_list = initialize_weight(img_size);
+    auto *output_list = new int[training_iteration];
     int random_img_index;
     int label;
     int output;
 
 
     for (int i = 0; i < training_iteration; i++) {
-        random_img_index = getRandomValue(img_list_size - 1);
+        random_img_index = getRandomIntValue(img_list_size - 1);
         label = set_label_two_output(random_img_index, nb_fooball_img_list, nb_basket_img_list, className);
-        output = get_output_and_set_weight(img_list[random_img_index], weight_list, img_size + 1, label);
+        output = get_output_and_set_weight(img_list[random_img_index], weight_list, img_size, label);
         if (output == label) {
             output_list[i] = 1.0;
         } else {
             output_list[i] = 0.0;
         }
+        std::cout << i << " / " << training_iteration << std::endl;
     }
-    save_modele(weight_list, img_size + 1, file_path);
-    weight_and_output[0] = weight_list;
-    weight_and_output[1] = output_list;
+    save_modele(weight_list, img_size, file_path);
 
-    return weight_and_output;
+    return output_list;
 }
 
+DLLEXPORT int predict_class(int *img, int img_size, const char *football_model_path, const char *basket_model_path,
+                            const char *tennis_model_path) {
+    for(int i = 0; i< img_size; i++){
+        //std::cout << "pixel " << i+1 << " = " << img[i] << std::endl;
+    }
+    float *football_model = load_model(img_size, football_model_path);
+    /*for(int i = 0; i<img_size; i++){
+        std::cout << "football weight : " << football_model[i] << std::endl;
+    }*/
+    float *basket_model = load_model(img_size, basket_model_path);
+    /*for(int i = 0; i<img_size; i++){
+        std::cout << "basket weight : " << basket_model[i] << std::endl;
+    }*/
+    float *tennis_model = load_model(img_size, tennis_model_path);
+    /*for(int i = 0; i<img_size; i++){
+        std::cout << "tennis weight : " << basket_model[i] << std::endl;
+    }*/
+    return get_class_three_output(img, football_model, basket_model, tennis_model, img_size);
+    //return 1;
+}
 
-DLLEXPORT float **
+DLLEXPORT int *
 train_linear_model_football(int **img_list, const int *size_class, int img_size, int training_iteration,
                             const char *file_path) {
     return train_linear_model(img_list, size_class, img_size, training_iteration, file_path, "football");
 }
 
-DLLEXPORT float **train_linear_model_basket(int **img_list, const int *size_class, int img_size, int training_iteration,
+DLLEXPORT int *train_linear_model_basket(int **img_list, const int *size_class, int img_size, int training_iteration,
                                             const char *file_path) {
     return train_linear_model(img_list, size_class, img_size, training_iteration, file_path, "basket");
 }
 
-DLLEXPORT float **train_linear_model_tennis(int **img_list, const int *size_class, int img_size, int training_iteration,
+DLLEXPORT int *train_linear_model_tennis(int **img_list, const int *size_class, int img_size, int training_iteration,
                                             const char *file_path) {
     return train_linear_model(img_list, size_class, img_size, training_iteration, file_path, "tennis");
 }
