@@ -167,6 +167,7 @@ void retropropagation(int hidden_Layer, int neurons, double *data, MatrixXd &dat
     ofstream deltas("file/delta.txt");
     matrixinfile(deltas, delta_matrix);
     // stochastic gradient descent
+    //mise a jour des poids d'entrée
     for(int i = 0 ; i < neurons ; i++)
     {
         for(int j = 0 ; j < size ; j++)
@@ -174,6 +175,7 @@ void retropropagation(int hidden_Layer, int neurons, double *data, MatrixXd &dat
             weight[i * size + j] -= learning_rate * data[j] * delta_matrix(i, 0);
         }
     }
+    //milieu
     for (int i = 0; i < neurons; i++)
     {
         for (int j = 0; j < hidden_Layer - 1; j++)
@@ -181,6 +183,7 @@ void retropropagation(int hidden_Layer, int neurons, double *data, MatrixXd &dat
             weight_matrix(i * neurons + j, j) -= learning_rate * data_matrix(i, j) * delta_matrix(i, j+1);
         }
     }
+    //poids de sortie
     for(int i = 0 ; i < nbClass ; i++)
     {
         for(int j = 0 ; j < neurons ; j++)
@@ -216,20 +219,20 @@ extern "C"
         
         for (int i = 0; i < neurons * size_image; i++)
         {
-            weight.push_back(dis(gen));
+            weight.push_back(int(dis(gen)));
         }
         if (file.is_open())
             vectorinfile(file, weight);
         for (int i = 0; i < neurons * nbClass; i++)
         {
-            weight_output.push_back(dis(gen));
+            weight_output.push_back(int(dis(gen)));
         }
         if (weight_outputfile.is_open())
             vectorinfile(weight_outputfile, weight_output);
         for (int i = 0; i < weight_matrix.rows(); i++)
         {
             for (int j = 0; j < weight_matrix.cols(); j++)
-                weight_matrix(i, j) = dis(gen);
+                weight_matrix(i, j) = int(dis(gen));
         }
         // stock in file
         if (weightfile.is_open())
@@ -278,7 +281,8 @@ extern "C"
         double sum = 0;
         if (hidden_Layer == 0 || neurons == 0)
         {
-            return 404;
+            std::runtime_error("hidden_Layer or neurons is null");
+            return 0;
         }
         // sinon remplissage des couches cachées
         int increment = 0;

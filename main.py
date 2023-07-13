@@ -9,16 +9,6 @@ import ctypes
 #library
 lib = ctypes.cdll.LoadLibrary('./libadd.so')
 
-def linear_model(data, weight, size, bias, lib):
-    func = lib.linear_model
-    func.restype = ctypes.c_double
-    func.argtypes = (ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_int)
-    data_array = (ctypes.c_double * len(data))(*data)
-    weight_array = (ctypes.c_double * len(weight))(*weight)
-    res = func(data_array, weight_array, size, bias)
-    return res
-
-
 def perceptron( hidden_Layer, neurons, random, data, bias, size, lib, nb_Class, prediction, learning_rate):
     func = lib.perceptron
     func.restype = ctypes.c_double
@@ -34,29 +24,6 @@ def get_file(hidden_Layer, neurons, random, size_image, lib, nb_Class):
     func.argtypes = (ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int)
     func(hidden_Layer, neurons, random, size_image, nb_Class)
 
-nb_Class = 1
-rand = int(input("Enter a number of random: "))
-get_file(1, 2, rand, 2, lib, nb_Class)
-
-learning_rate = 0.15
-
-#XOR
-for i in range(1000):
-    val = perceptron(1, 2, 2, [0.0,0.0], 0, 2, lib, nb_Class, [-1], learning_rate)
-    if(i == 999):
-        print("XOR for [0, 0] = ", val)
-    val = perceptron(1, 2, 2, [255.0,0], 0, 2, lib, nb_Class, [1], learning_rate)
-    if(i == 999):
-        print("XOR for [1, 0] = ", val)
-    val = perceptron(1, 2, 2, [0.0,255.0], 0, 2, lib, nb_Class, [1], learning_rate)
-    if(i == 999):
-        print("XOR for [0, 1] = ", val)
-    val = perceptron(1, 2, 2, [255.0,255.0], 0, 2, lib, nb_Class, [-1], learning_rate)
-    if(i == 999):
-        print("XOR for [1, 1] = ", val)
-    print("Iteration ", i, " done")
-
-nb_Class = 3
 # Convertie l'image en matrice
 def get_matrice_image(img):
     img_mat = np.array(img)
@@ -73,6 +40,9 @@ def get_img_list(directory):
         img_black_white = img_resized.convert('L')
         img_list.append(img_black_white)
     return img_list
+
+
+nbClass = 3
 
 #get images
 footTrain = []
@@ -154,50 +124,8 @@ data = []
 weight = []
 
 bias = 1
-
-"""for flatten in footTrain:
-    for i in range(len(flatten)):
-        weight.append(random.randint(-rand, rand))
-    football_train.append(linear_model(flatten, weight, len(flatten), bias, lib))
-    weight = []
-for flatten in footTest:
-    for i in range(len(flatten)):
-        weight.append(random.randint(-rand, rand))
-    football_test.append(linear_model(flatten, weight, len(flatten), bias, lib))
-    weight = []
-
-for flatten in tennisTrain:
-    for i in range(len(flatten)):
-        weight.append(random.randint(-rand, rand))
-    tennis_train.append(linear_model(flatten, weight, len(flatten), bias, lib))
-    weight = []
-for flatten in tennisTest:
-    for i in range(len(flatten)):
-        weight.append(random.randint(-rand, rand))
-    tennis_test.append(linear_model(flatten, weight, len(flatten), bias, lib))
-    weight = []
-    
-for flatten in basketTrain:
-    for i in range(len(flatten)):
-        weight.append(random.randint(-rand, rand))
-    basket_train.append(linear_model(flatten, weight, len(flatten), bias, lib))
-    weight = []
-for flatten in basketTest:
-    for i in range(len(flatten)):
-        weight.append(random.randint(-rand, rand))
-    basket_test.append(linear_model(flatten, weight, len(flatten), bias, lib))
-    weight = []
-    
-
-print(f'Result learning foot :\n{football_train}\n')
-print(f'Result test foot :\n{football_test}\n\n')
-
-print(f'Result learning tennis :\n{tennis_train}\n')
-print(f'Result test tennis :\n{tennis_test}\n\n')
-
-print(f'Result learning basket :\n{basket_train}\n')
-print(f'Result test basket :\n{basket_test}\n\n')"""
-
+learning_rate = 0.1
+nb_Class = 3
 hidden_Layer = int(input("Enter a number of hidden layer: "))
 neurons = int(input("Enter a number of neurons: "))
 random = int(input("Enter a number of random: "))
