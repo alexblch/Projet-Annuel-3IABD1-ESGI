@@ -114,42 +114,30 @@ void get_vector_infile(ifstream &file, vector<double> &vec, int size)
     }
 }
 
-void set_vector_weight(vector<double> &weight, int size, int neurons, int random)
-{
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_real_distribution<> dis(-random - 1, random + 1);
-    for (int i = 0; i < size * neurons; i++)
-    {
-        if (i == 0 || i == size * neurons - 1)
-            weight.push_back(1);
-        else
-        {
-            if (neurons < 3)
-                weight.push_back(0);
-            else
-                weight.push_back(int(dis(gen)));
-        }
-    }
-}
 
-void retropropagation(int hidden_Layer, int neurons, double *data, MatrixXd &data_matrix, MatrixXd &weight_matrix, vector<double> &weight, vector<double> &weight_output, double *out, int nbClass, int *prediction, int size, double learning_rate)
+
+void retropropagation(int hidden_Layer, int neurons, double *data, MatrixXd &data_matrix, MatrixXd &weight_matrix, vector<double> &weight, vector<double> &weight_output, double *out, int nbClass, int *prediction, int size, double learning_rate/*double bias*/ )
 {
     double *delta = new double[nbClass];
     for(int i = 0; i < nbClass; i++)
         delta[i] = prediction[i] - out[i];
     
+    std::ofstream loss("file/loss.txt");
+    if(loss)
+    {
+        file_data(delta, nbClass, loss);
+    }
+
     MatrixXd delta_matrix = MatrixXd::Zero(neurons, hidden_Layer);
     double sum = 0;
 
-    
     for(int i = 0 ; i < neurons; i++)
     {
         sum = 0;
         for (int k = 0; k < nbClass; k++)
             sum += delta[k] * weight_output[k * neurons + i];
-        
-        delta_matrix(i, hidden_Layer-1) = data_matrix(i, hidden_Layer-1) * (1 - data_matrix(i, hidden_Layer-1)) * sum;
+
+        delta_matrix(i, hidden_Layer-1) = (1 - data_matrix(i, hidden_Layer-1) * data_matrix(i, hidden_Layer-1)) * sum;
     }
 
     for (int i = hidden_Layer-2; i >= 0 ; i--)
@@ -161,13 +149,14 @@ void retropropagation(int hidden_Layer, int neurons, double *data, MatrixXd &dat
             {
                 sum += delta_matrix(k, i+1) * weight_matrix(k * neurons + j, i);
             }
-            delta_matrix(j, i) = data_matrix(j, i) * (1 - data_matrix(j, i)) * sum;
+            delta_matrix(j, i) = (1 - data_matrix(j, i) * data_matrix(j, i)) * sum;
         }
     }
+
     ofstream deltas("file/delta.txt");
     matrixinfile(deltas, delta_matrix);
+
     // stochastic gradient descent
-    //mise a jour des poids d'entrée
     for(int i = 0 ; i < neurons ; i++)
     {
         for(int j = 0 ; j < size ; j++)
@@ -175,7 +164,7 @@ void retropropagation(int hidden_Layer, int neurons, double *data, MatrixXd &dat
             weight[i * size + j] -= learning_rate * data[j] * delta_matrix(i, 0);
         }
     }
-    //milieu
+
     for (int i = 0; i < neurons; i++)
     {
         for (int j = 0; j < hidden_Layer - 1; j++)
@@ -183,7 +172,7 @@ void retropropagation(int hidden_Layer, int neurons, double *data, MatrixXd &dat
             weight_matrix(i * neurons + j, j) -= learning_rate * data_matrix(i, j) * delta_matrix(i, j+1);
         }
     }
-    //poids de sortie
+
     for(int i = 0 ; i < nbClass ; i++)
     {
         for(int j = 0 ; j < neurons ; j++)
@@ -191,6 +180,7 @@ void retropropagation(int hidden_Layer, int neurons, double *data, MatrixXd &dat
             weight_output[i * neurons + j] -= learning_rate * data_matrix(j, hidden_Layer-1) * delta[i];
         }
     }
+
     std::ofstream weightfile("file/weight.txt");
     vectorinfile(weightfile, weight);
 
@@ -212,27 +202,27 @@ extern "C"
         // random number
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::uniform_real_distribution<> dis(-random, random);
+        std::uniform_int_distribution<> dis(-random, random);
         MatrixXd weight_matrix = MatrixXd::Zero(neurons * neurons, hidden_layers - 1);
         std::vector<double> weight;
         std::vector<double> weight_output;
         
         for (int i = 0; i < neurons * size_image; i++)
         {
-            weight.push_back(int(dis(gen)));
+            weight.push_back(float(dis(gen)));
         }
         if (file.is_open())
             vectorinfile(file, weight);
         for (int i = 0; i < neurons * nbClass; i++)
         {
-            weight_output.push_back(int(dis(gen)));
+            weight_output.push_back(float(dis(gen)));
         }
         if (weight_outputfile.is_open())
             vectorinfile(weight_outputfile, weight_output);
         for (int i = 0; i < weight_matrix.rows(); i++)
         {
             for (int j = 0; j < weight_matrix.cols(); j++)
-                weight_matrix(i, j) = int(dis(gen));
+                weight_matrix(i, j) = float(dis(gen));
         }
         // stock in file
         if (weightfile.is_open())
@@ -244,7 +234,7 @@ extern "C"
         file.close();
     }
 
-    double perceptron(int hidden_Layer, int neurons, int random, double *data, int bias, int size, int nbClass, int *prediction, double learning_rate) // fonction de sortie, perceptron multicouche
+    double perceptron(int hidden_Layer, int neurons, int random, double *data, double bias, int size, int nbClass, int *prediction, double learning_rate) // fonction de sortie, perceptron multicouche
     {
         ifstream file("file/weight.txt");
         ifstream weightfile("file/weight_matrix.txt");
@@ -299,7 +289,6 @@ extern "C"
                 data_matrix(i, 0) += data[j] * weight[increment];
                 increment++;
             }
-            
         }
         // Appliquer la fonction d'activation à la sortie de chaque neurone
         for (int i = 0; i < data_matrix.rows(); i++)
