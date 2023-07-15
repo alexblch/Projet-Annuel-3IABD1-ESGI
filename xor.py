@@ -1,5 +1,6 @@
 import ctypes
 import random
+import matplotlib.pyplot as plt
 
 lib = ctypes.cdll.LoadLibrary('./libadd.so')
 
@@ -37,7 +38,8 @@ val1 = 0
 val2 = 0
 val3 = 0
 val4 = 0
-list = [[0, 0], [0, 255], [255, 0], [255, 255]]
+expected = [-1, 1, 1, -1]
+predictions = []
 #XOR
 get_file(hidden_Layer, neurons, rand, 2, lib, nb_Class)
 for i in range(epoch):
@@ -48,24 +50,44 @@ for i in range(epoch):
             print(True)
         else:
             print(False)
+        predictions.append(val1)
     if a == 1:
         val2 = perceptron(hidden_Layer, neurons, rand, [255.0,-255], bias, 2, lib, nb_Class, [1], learning_rate)
         if val2 >= 0:
             print(True)
         else:
             print(False)
+        predictions.append(val2)
     if a == 2:
         val3 = perceptron(hidden_Layer, neurons, rand, [-255,255.0], bias, 2, lib, nb_Class, [1], learning_rate)
         if val3 >= 0:
             print(True)
         else:
             print(False)
+        predictions.append(val3)
     if a == 3:
         val4 = perceptron(hidden_Layer, neurons, rand, [255.0,255.0], bias, 2, lib, nb_Class, [-1], learning_rate)
         if val4 <= -0:
             print(True)
         else:
             print(False)
+        predictions.append(val4)
     print(i)
+print("Results: ")
+print(f'Xor(0,0): {val1}, Xor(0,1): {val2}, Xor(1,0): {val3}, Xor(1,1): {val4}')
+actual_values = [-1, 1, 1, -1]
+final_predictions = [val1, val2, val3, val4]
+xor_pairs = [(0, 0), (0, 1), (1, 0), (1, 1)]
+#graph
+plt.figure(figsize=(12, 6))
+for i in range(4):
+    plt.scatter(*xor_pairs[i], c='red' if actual_values[i] > 0 else 'blue')
+    plt.text(xor_pairs[i][0], xor_pairs[i][1], f"  Predicted: {final_predictions[i]:.2f}", fontsize=12)
 
-display_results(val1, val2, val3, val4)
+plt.xlabel('XOR Input 1')
+plt.ylabel('XOR Input 2')
+plt.title('Final Predicted vs Actual Values for XOR operation')
+plt.grid(True)
+
+# Save the figure in 'graph/xor.png'
+plt.savefig('graph/xor.png')
