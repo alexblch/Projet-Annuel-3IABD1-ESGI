@@ -118,46 +118,48 @@ basket_testMLP = []
 
 #print(f'football train : \n{footTrain}')
 
-
+epochs = 100000
 
 data = []
 weight = []
-
+print(tennisTrain)
+print(f'{len(tennisTrain)}')
 bias = 1
-learning_rate = 0.1
+learning_rate = -0.01
 nb_Class = 3
 hidden_Layer = int(input("Enter a number of hidden layer: "))
 neurons = int(input("Enter a number of neurons: "))
-random = int(input("Enter a number of random: "))
+rand = int(input("Enter a number of random: "))
 bias = int(input("Enter a number of bias: "))
 size = 32*32
+result = []
+value = 0
+get_file(hidden_Layer, neurons, rand, size, lib, nb_Class)
 
-get_file(hidden_Layer, neurons, random, size, lib, nb_Class)
-print(footTrain)
-for flatten in footTrain:
-    football_trainMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [1,-1,-1], learning_rate))
-for flatten in footTest:
-    football_testMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [1,-1,-1], learning_rate))
+for i in range(epochs):
+    r = random.randint(0, len(footTrain)-1)
+    if r == 0:
+        b = random.randint(0, len(footTrain)-1)
+        prediction = [1, 0, 0]
+        value = perceptron(hidden_Layer, neurons, rand, footTrain[b], bias, size, lib, nb_Class, prediction, learning_rate)
+    if r == 1:
+        b = random.randint(0, len(tennisTrain)-1)
+        prediction = [0, 1, 0]
+        value = perceptron(hidden_Layer, neurons, rand, tennisTrain[b], bias, size, lib, nb_Class, prediction, learning_rate)
+    if r == 2:
+        b = random.randint(0, len(basketTrain)-1)
+        prediction = [0, 0, 1]
+        value = perceptron(hidden_Layer, neurons, rand, basketTrain[b], bias, size, lib, nb_Class, prediction, learning_rate)
+    result.append(value)
+    #with open("file/outclass.txt") as f:
+    print(f'Epochs : {i} / {epochs}, result : {value}')
+
+print(f'results : {result}')
     
-for flatten in tennisTrain:
-    tennis_trainMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [-1,1,-1], learning_rate))
-for flatten in tennisTest:
-    tennis_testMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [-1,1,-1], learning_rate))
     
-for flatten in basketTrain:
-    basket_trainMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [-1,-1,1], learning_rate))
-for flatten in basketTest:
-    basket_testMLP.append(perceptron(hidden_Layer, neurons, random, flatten, bias, len(flatten), lib, nb_Class, [-1,-1,1], learning_rate))
     
 
-print(f'Result learning foot for perceptron :\n{football_trainMLP}\n')
-print(f'Result test foot for perceptron :{football_testMLP}\n\n')
 
-print(f'Result learning tennis for perceptron :\n{tennis_trainMLP}\n')
-print(f'Result test tennis for perceptron :\n{tennis_testMLP}\n\n')
-
-print(f'Result learning basket for perceptron :\n{basket_trainMLP}\n')
-print(f'Result test basket for perceptron :\n{basket_testMLP}\n\n')
 
 
 #plotting

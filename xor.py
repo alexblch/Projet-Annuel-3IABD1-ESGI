@@ -33,7 +33,7 @@ bias = float(input("Enter a bias: "))
 
 
 learning_rate = -0.01
-epoch = 10000
+epoch = 1000
 val1 = 0
 val2 = 0
 val3 = 0
@@ -47,39 +47,39 @@ for i in range(epoch):
     if a == 0:
         val1 = perceptron(hidden_Layer, neurons, rand, [-255,-255], bias, 2, lib, nb_Class, [-1], learning_rate)
         if val1 <= 0:
-            print(True)
+            print(f'Epoch {i}, result :{True}, loss: {-1-val1}, val : {val1}')
         else:
-            print(False)
+            print(f'Epoch {i}, result :{True}, loss: {-1-val1}, val : {val1}')
         predictions.append(val1)
     if a == 1:
         val2 = perceptron(hidden_Layer, neurons, rand, [255.0,-255], bias, 2, lib, nb_Class, [1], learning_rate)
         if val2 >= 0:
-            print(True)
+            print(f'Epoch {i}, result :{True}, loss: {1-val2}, val : {val2}')
         else:
-            print(False)
+            print(f'Epoch {i}, result :{False}, loss: {1-val2} val : {val2}')
         predictions.append(val2)
     if a == 2:
         val3 = perceptron(hidden_Layer, neurons, rand, [-255,255.0], bias, 2, lib, nb_Class, [1], learning_rate)
         if val3 >= 0:
-            print(True)
+            print(f'Epoch {i}, result :{True}, loss: {1-val3}, val : {val3}')
         else:
-            print(False)
+            print(f'Epoch {i}, result :{False}, loss: {1-val3}, val : {val3}')
         predictions.append(val3)
     if a == 3:
         val4 = perceptron(hidden_Layer, neurons, rand, [255.0,255.0], bias, 2, lib, nb_Class, [-1], learning_rate)
         if val4 <= -0:
-            print(True)
+            print(f'Epoch {i}, result :{True}, loss: {-1-val4}, val : {val4}')
         else:
-            print(False)
+            print(f'Epoch {i}, result :{False}, loss: {-1-val4}, val : {val4}')
         predictions.append(val4)
-    print(i)
+    
 print("Results: ")
 print(f'Xor(0,0): {val1}, Xor(0,1): {val2}, Xor(1,0): {val3}, Xor(1,1): {val4}')
 actual_values = [-1, 1, 1, -1]
 final_predictions = [val1, val2, val3, val4]
 xor_pairs = [(0, 0), (0, 1), (1, 0), (1, 1)]
 #graph
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(10.5, 6))
 for i in range(4):
     plt.scatter(*xor_pairs[i], c='red' if actual_values[i] > 0 else 'blue')
     plt.text(xor_pairs[i][0], xor_pairs[i][1], f"  Predicted: {final_predictions[i]:.2f}", fontsize=12)
