@@ -18,6 +18,19 @@ def perceptron( hidden_Layer, neurons, random, data, bias, size, lib, nb_Class, 
     res = func(hidden_Layer, neurons, random, data_array, bias ,size, nb_Class, prediction_array, learning_rate)
     return res
 
+def propagate(hidden_Layer, neurons, random, data, bias, size, lib, nb_Class):
+    func = lib.propagate
+    func.argtypes = (ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_double),
+                     ctypes.c_double, ctypes.c_int, ctypes.c_int)
+    func.restype = ctypes.POINTER(ctypes.c_double)
+    
+    data_array = (ctypes.c_double * len(data))(*data)
+    res = func(hidden_Layer, neurons, random, data_array, bias, size, nb_Class)
+    
+    return res
+
+
+
 def get_file(hidden_Layer, neurons, random, size_image, lib, nb_Class):
     func = lib.create_file
     func.restype = None
@@ -118,14 +131,12 @@ basket_testMLP = []
 
 #print(f'football train : \n{footTrain}')
 
-epochs = 100000
+epochs = 1000000
 
 data = []
 weight = []
-print(tennisTrain)
-print(f'{len(tennisTrain)}')
 bias = 1
-learning_rate = -0.01
+learning_rate = -0.001
 nb_Class = 3
 hidden_Layer = int(input("Enter a number of hidden layer: "))
 neurons = int(input("Enter a number of neurons: "))
@@ -140,21 +151,75 @@ for i in range(epochs):
     r = random.randint(0, len(footTrain)-1)
     if r == 0:
         b = random.randint(0, len(footTrain)-1)
-        prediction = [1, 0, 0]
+        prediction = [1, -1, -1]
         value = perceptron(hidden_Layer, neurons, rand, footTrain[b], bias, size, lib, nb_Class, prediction, learning_rate)
     if r == 1:
         b = random.randint(0, len(tennisTrain)-1)
-        prediction = [0, 1, 0]
+        prediction = [-1, 1, -1]
         value = perceptron(hidden_Layer, neurons, rand, tennisTrain[b], bias, size, lib, nb_Class, prediction, learning_rate)
     if r == 2:
         b = random.randint(0, len(basketTrain)-1)
-        prediction = [0, 0, 1]
+        prediction = [-1, -1, 1]
         value = perceptron(hidden_Layer, neurons, rand, basketTrain[b], bias, size, lib, nb_Class, prediction, learning_rate)
     result.append(value)
     #with open("file/outclass.txt") as f:
-    print(f'Epochs : {i} / {epochs}, result : {value}')
+    print(f'epoch : {i}, value : {value}')
 
-print(f'results : {result}')
+
+accuracy = 0    
+l = []
+total = len(footTest) + len(tennisTest) + len(basketTest)
+for i in range(len(footTest)):
+    index = 0
+    value = propagate(hidden_Layer, neurons, rand, footTest[i], bias, size, lib, nb_Class)
+    with open("file/outclass.txt") as f:
+        contenu = f.read().split(" ")
+        new_contenu = []  # create a new list for the converted values
+        for j in range(len(contenu)):
+            if contenu[j] != '':  # only convert non-empty strings
+                try:
+                    new_contenu.append(float(contenu[j]))  # add the converted value to the new list
+                except ValueError:
+                    continue
+        l.append(new_contenu)
+        if new_contenu[index] == max(new_contenu):
+            accuracy += 1
+
+            
+for i in range(len(tennisTest)):
+    index = 1
+    value = propagate(hidden_Layer, neurons, rand, tennisTest[i], bias, size, lib, nb_Class)
+    with open("file/outclass.txt") as f:
+        contenu = f.read().split(" ")
+        new_contenu = []  # create a new list for the converted values
+        for j in range(len(contenu)):
+            if contenu[j] != '':  # only convert non-empty strings
+                try:
+                    new_contenu.append(float(contenu[j]))  # add the converted value to the new list
+                except ValueError:
+                    continue
+        l.append(new_contenu)
+        if new_contenu[index] == max(new_contenu):
+            accuracy += 1
+            
+for i in range(len(basketTest)):
+    index = 2
+    value = propagate(hidden_Layer, neurons, rand, basketTest[i], bias, size, lib, nb_Class)
+    with open("file/outclass.txt") as f:
+        contenu = f.read().split(" ")
+        new_contenu = []  # create a new list for the converted values
+        for j in range(len(contenu)):
+            if contenu[j] != '':  # only convert non-empty strings
+                try:
+                    new_contenu.append(float(contenu[j]))  # add the converted value to the new list
+                except ValueError:
+                    continue
+        l.append(new_contenu)
+        if new_contenu[index] == max(new_contenu):
+            accuracy += 1
+            
+print(f'Accuracy : {accuracy} / {total} = {accuracy/total}')
+            
     
     
     

@@ -347,6 +347,117 @@ extern "C"
         return out[0];
     }
 
+    double propagate(int hidden_Layer, int neurons, int random, double *data, double bias, int size, int nbClass)
+    {
+        ifstream file("file/weight.txt");
+        ifstream weightfile("file/weight_matrix.txt");
+        ifstream weight_outputfile("file/weight_output.txt");
+        ifstream weight_matrixfile("file/weight_matrix.txt");
+
+        ofstream file_data_image("file/data.txt");
+
+        MatrixXd data_matrix(neurons, hidden_Layer);
+        //aficher type de data_matrix
+        data_matrix.setConstant(bias);
+        MatrixXd weight_matrix = MatrixXd::Zero(neurons * neurons, hidden_Layer - 1);
+
+        data = set_Data(data, size);
+
+        if (file_data_image.is_open())
+            file_data(data, size, file_data_image);
+        file_data_image.close();
+
+        if (weight_matrixfile.is_open())
+            getMatrixfromfile(weight_matrixfile, weight_matrix, weight_matrix.rows(), weight_matrix.cols());
+        weight_matrixfile.close();
+        cout << endl;
+        vector<double> weight;
+        if (file.is_open())
+            get_vector_infile(file, weight, neurons*size);
+        file.close();
+
+        vector<double> weight_output;
+        if (weight_outputfile.is_open())
+            get_vector_infile(weight_outputfile, weight_output, neurons*nbClass);
+        weight_outputfile.close();
+
+        double sum = 0;
+        if (hidden_Layer == 0 || neurons == 0)
+        {
+            std::runtime_error("hidden_Layer or neurons is null");
+            return 0;
+        }
+        // sinon remplissage des couches cachées
+        int increment = 0;
+
+
+
+        // debut de la propagation
+        //  remplissage de la matrice de données
+        for (int i = 0; i < data_matrix.rows(); i++)
+        {
+            //data_matrix(i, 0) += bias;
+            for (int j = 0; j < size; j++)
+            {
+                data_matrix(i, 0) += data[j] * weight[increment];
+                increment++;
+            }
+        }
+        // Appliquer la fonction d'activation à la sortie de chaque neurone
+        for (int i = 0; i < data_matrix.rows(); i++)
+        {
+            data_matrix(i, 0) = std::tanh(data_matrix(i, 0));
+        }
+        increment = 0;
+
+
+        // display_dataMatrix();
+        // remplissage des autres couches
+        for (int i = 1; i < data_matrix.cols(); i++)
+        {
+            for (int j = 0; j < data_matrix.rows(); j++)
+            {
+                //data_matrix(j, i) += bias;
+                for (int k = 0; k < data_matrix.rows(); k++)
+                {
+                    data_matrix(j, i) += data_matrix(k, i - 1) * weight_matrix(increment, i - 1);
+                    increment++;
+                }
+                data_matrix(j, i) = std::tanh(data_matrix(j, i));
+                increment = 0;
+            }
+        }
+        
+        double *out = new double[nbClass];
+        for (int i = 0; i < nbClass; i++)
+        {
+            out[i] = bias;
+        }
+
+        increment = 0;
+        for (int i = 0; i < nbClass; i++)
+        {
+            for (int j = 0; j < data_matrix.rows(); j++)
+            {
+                out[i] += data_matrix(j, data_matrix.cols() - 1) * weight_output[increment];
+                increment++;
+            }
+            out[i] = std::tanh(out[i]);
+        }
+
+
+        std::ofstream out_class("file/outclass.txt");
+        if (out_class.is_open())
+            file_data(out, nbClass, out_class);
+
+        ofstream datafile("file/data_matrix.txt");
+        if (datafile.is_open())
+            matrixinfile(datafile, data_matrix);
+        datafile.close();
+        return out[0];
+    }
+
+
     double linear_model(double *data, double *weight, int size, int bias)
     {
         data = set_Data(data, size);
