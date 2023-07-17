@@ -43,6 +43,8 @@ def get_matrice_image(img):
     return img_mat
 
 # Retourne la liste d'image d'un dossier
+
+
 def get_img_list(directory):
     img_dir = directory
     img_list = []
@@ -51,8 +53,10 @@ def get_img_list(directory):
         img = Image.open(img_path)
         img_resized = img.resize((32,32))
         img_black_white = img_resized.convert('L')
-        img_list.append(img_black_white)
+        img_float = np.array(img_black_white, dtype=float)  # convert image to numpy array and change data type to float
+        img_list.append(img_float)
     return img_list
+
 
 
 nbClass = 3
@@ -130,13 +134,15 @@ basket_trainMLP = []
 basket_testMLP = []
 
 #print(f'football train : \n{footTrain}')
-
-epochs = 1000000
+for i in range(len(footTrain)):
+    for j in range(len(footTrain[i])):
+        print(f'{type(footTrain[i][j])}')
+epochs = 100000
 
 data = []
 weight = []
 bias = 1
-learning_rate = -0.001
+learning_rate = -0.02
 nb_Class = 3
 hidden_Layer = int(input("Enter a number of hidden layer: "))
 neurons = int(input("Enter a number of neurons: "))
@@ -182,6 +188,7 @@ for i in range(len(footTest)):
                 except ValueError:
                     continue
         l.append(new_contenu)
+        print(f'new_contenu : {new_contenu}')
         if new_contenu[index] == max(new_contenu):
             accuracy += 1
 
@@ -199,6 +206,7 @@ for i in range(len(tennisTest)):
                 except ValueError:
                     continue
         l.append(new_contenu)
+        print(f'new_contenu : {new_contenu}')
         if new_contenu[index] == max(new_contenu):
             accuracy += 1
             
@@ -215,6 +223,7 @@ for i in range(len(basketTest)):
                 except ValueError:
                     continue
         l.append(new_contenu)
+        print(f'new_contenu : {new_contenu}')
         if new_contenu[index] == max(new_contenu):
             accuracy += 1
             
