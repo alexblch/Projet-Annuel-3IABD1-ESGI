@@ -45,28 +45,28 @@ get_file(hidden_Layer, neurons, rand, 2, lib, nb_Class)
 for i in range(epoch):
     a = random.randint(0, 3)
     if a == 0:
-        val1 = perceptron(hidden_Layer, neurons, rand, [-255,-255], bias, 2, lib, nb_Class, [-1], learning_rate)
+        val1 = perceptron(hidden_Layer, neurons, rand, [-1,-1], bias, 2, lib, nb_Class, [-1], learning_rate)
         if val1 <= 0:
             print(f'Epoch {i}, result :{True}, loss: {-1-val1}, val : {val1}')
         else:
             print(f'Epoch {i}, result :{True}, loss: {-1-val1}, val : {val1}')
         predictions.append(val1)
     if a == 1:
-        val2 = perceptron(hidden_Layer, neurons, rand, [255.0,-255], bias, 2, lib, nb_Class, [1], learning_rate)
+        val2 = perceptron(hidden_Layer, neurons, rand, [1,-1], bias, 2, lib, nb_Class, [1], learning_rate)
         if val2 >= 0:
             print(f'Epoch {i}, result :{True}, loss: {1-val2}, val : {val2}')
         else:
             print(f'Epoch {i}, result :{False}, loss: {1-val2} val : {val2}')
         predictions.append(val2)
     if a == 2:
-        val3 = perceptron(hidden_Layer, neurons, rand, [-255,255.0], bias, 2, lib, nb_Class, [1], learning_rate)
+        val3 = perceptron(hidden_Layer, neurons, rand, [-1,1], bias, 2, lib, nb_Class, [1], learning_rate)
         if val3 >= 0:
             print(f'Epoch {i}, result :{True}, loss: {1-val3}, val : {val3}')
         else:
             print(f'Epoch {i}, result :{False}, loss: {1-val3}, val : {val3}')
         predictions.append(val3)
     if a == 3:
-        val4 = perceptron(hidden_Layer, neurons, rand, [255.0,255.0], bias, 2, lib, nb_Class, [-1], learning_rate)
+        val4 = perceptron(hidden_Layer, neurons, rand, [1,1], bias, 2, lib, nb_Class, [-1], learning_rate)
         if val4 <= -0:
             print(f'Epoch {i}, result :{True}, loss: {-1-val4}, val : {val4}')
         else:

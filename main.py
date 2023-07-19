@@ -51,9 +51,8 @@ def get_img_list(directory):
     for img_name in os.listdir(img_dir):
         img_path = os.path.join(img_dir, img_name)
         img = Image.open(img_path)
-        img_resized = img.resize((32,32))
-        img_black_white = img_resized.convert('L')
-        img_float = np.array(img_black_white, dtype=float)  # convert image to numpy array and change data type to float
+        img_resized = img.resize((25, 25))
+        img_float = np.array(img_resized, dtype=float) / 255.0 # convert image to numpy array and change data type to float
         img_list.append(img_float)
     return img_list
 
@@ -134,50 +133,71 @@ basket_trainMLP = []
 basket_testMLP = []
 
 #print(f'football train : \n{footTrain}')
-for i in range(len(footTrain)):
-    for j in range(len(footTrain[i])):
-        print(f'{type(footTrain[i][j])}')
-epochs = 100000
+epochs = 10
 
 data = []
 weight = []
-bias = 1
-learning_rate = -0.02
+bias = 10
+learning_rate = -0.05
 nb_Class = 3
 hidden_Layer = int(input("Enter a number of hidden layer: "))
 neurons = int(input("Enter a number of neurons: "))
 rand = int(input("Enter a number of random: "))
 bias = int(input("Enter a number of bias: "))
-size = 32*32
+size = 25*25*3
 result = []
 value = 0
 get_file(hidden_Layer, neurons, rand, size, lib, nb_Class)
 
-for i in range(epochs):
-    r = random.randint(0, len(footTrain)-1)
+"""for i in range(epochs):
+    r = random.randint(0, 2)
     if r == 0:
         b = random.randint(0, len(footTrain)-1)
         prediction = [1, -1, -1]
         value = perceptron(hidden_Layer, neurons, rand, footTrain[b], bias, size, lib, nb_Class, prediction, learning_rate)
+        print(f'epoch : {i}, value : {value}')
     if r == 1:
         b = random.randint(0, len(tennisTrain)-1)
         prediction = [-1, 1, -1]
         value = perceptron(hidden_Layer, neurons, rand, tennisTrain[b], bias, size, lib, nb_Class, prediction, learning_rate)
+        print(f'epoch : {i}, value : {value}')
     if r == 2:
         b = random.randint(0, len(basketTrain)-1)
         prediction = [-1, -1, 1]
         value = perceptron(hidden_Layer, neurons, rand, basketTrain[b], bias, size, lib, nb_Class, prediction, learning_rate)
-    result.append(value)
+        print(f'epoch : {i}, value : {value}')
+    result.append(value)"""
+    
+    
+    
+for i in range(epochs):
+    r = random.randint(0, 2)
+    if r == 0:
+        prediction = [1, -1, -1]
+        for flatten in footTrain:
+            value = perceptron(hidden_Layer, neurons, rand, flatten, bias, size, lib, nb_Class, prediction, learning_rate)
+            result.append(prediction[0] - value)
+    if r == 1:
+        prediction = [-1, 1, -1]
+        for flatten in tennisTrain:
+            value = perceptron(hidden_Layer, neurons, rand, flatten, bias, size, lib, nb_Class, prediction, learning_rate)
+            result.append(prediction[0] - value)
+    if r == 2:
+        prediction = [-1, -1, 1]
+        for flatten in basketTrain:
+            value = perceptron(hidden_Layer, neurons, rand, flatten, bias, size, lib, nb_Class, prediction, learning_rate)
+            result.append(prediction[0] - value)
+    
     #with open("file/outclass.txt") as f:
     print(f'epoch : {i}, value : {value}')
 
-
+prediction = [1, -1, -1]
 accuracy = 0    
 l = []
 total = len(footTest) + len(tennisTest) + len(basketTest)
 for i in range(len(footTest)):
     index = 0
-    value = propagate(hidden_Layer, neurons, rand, footTest[i], bias, size, lib, nb_Class)
+    value = propagate(hidden_Layer, neurons, rand, footTest[i], bias, size, lib, nb_Class)#perceptron(hidden_Layer, neurons, rand, footTest[i], bias, size, lib, nb_Class, prediction, learning_rate)
     with open("file/outclass.txt") as f:
         contenu = f.read().split(" ")
         new_contenu = []  # create a new list for the converted values
@@ -192,10 +212,10 @@ for i in range(len(footTest)):
         if new_contenu[index] == max(new_contenu):
             accuracy += 1
 
-            
+prediction = [-1, 1, -1]     
 for i in range(len(tennisTest)):
     index = 1
-    value = propagate(hidden_Layer, neurons, rand, tennisTest[i], bias, size, lib, nb_Class)
+    value = propagate(hidden_Layer, neurons, rand, tennisTest[i], bias, size, lib, nb_Class)#perceptron(hidden_Layer, neurons, rand, tennisTest[i], bias, size, lib, nb_Class, prediction, learning_rate)
     with open("file/outclass.txt") as f:
         contenu = f.read().split(" ")
         new_contenu = []  # create a new list for the converted values
@@ -209,10 +229,10 @@ for i in range(len(tennisTest)):
         print(f'new_contenu : {new_contenu}')
         if new_contenu[index] == max(new_contenu):
             accuracy += 1
-            
+prediction = [-1, -1, 1]            
 for i in range(len(basketTest)):
     index = 2
-    value = propagate(hidden_Layer, neurons, rand, basketTest[i], bias, size, lib, nb_Class)
+    value = propagate(hidden_Layer, neurons, rand, basketTest[i], bias, size, lib, nb_Class)#perceptron(hidden_Layer, neurons, rand, basketTest[i], bias, size, lib, nb_Class, prediction, learning_rate)
     with open("file/outclass.txt") as f:
         contenu = f.read().split(" ")
         new_contenu = []  # create a new list for the converted values
@@ -238,41 +258,23 @@ print(f'Accuracy : {accuracy} / {total} = {accuracy/total}')
 
 #plotting
 import matplotlib.pyplot as plt
-# Graphique pour le football
 
 
+plt.figure()
 
+# Trace la courbe
+plt.plot(result)
 
-# Graphique pour le football
-plt.figure(1)
-plt.scatter(range(len(football_trainMLP)), football_trainMLP, label='Entraînement', color='red')
-plt.scatter(range(len(football_testMLP)), football_testMLP, label='Test', color='blue')
-plt.xlabel('Échantillons')
-plt.ylabel('Résultats')
-plt.title('FootballMLP')
-plt.savefig('./graph/footballMLP.png')
-plt.legend()
+# Donne un titre à la courbe
+plt.title('Courbe du loss pour le foot dans le MLP training')
 
-# Graphique pour le tennis
-plt.figure(2)
-plt.scatter(range(len(tennis_trainMLP)), tennis_trainMLP, label='Entraînement', color='red')
-plt.scatter(range(len(tennis_testMLP)), tennis_testMLP, label='Test', color='blue')
-plt.xlabel('Échantillons')
-plt.ylabel('Résultats')
-plt.title('TennisMLP')
-plt.savefig('./graph/tennisMLP.png')
-plt.legend()
+# Donne un nom à l'axe des x
+plt.xlabel('Index')
 
-# Graphique pour le basket
-plt.figure(3)
-plt.scatter(range(len(basket_trainMLP)), basket_trainMLP, label='Entraînement', color='red')
-plt.scatter(range(len(basket_testMLP)), basket_testMLP, label='Test', color='blue')
-plt.xlabel('Échantillons')
-plt.ylabel('Résultats')
-plt.title('BasketMLP')
-plt.savefig('./graph/basketMLP.png')
-plt.legend()
+# Donne un nom à l'axe des y
+plt.ylabel('Valeur')
 
-# Afficher tous les graphiques
+# Affiche la figure
 plt.show()
+plt.savefig('./graph/lossFootMLP.png')
 

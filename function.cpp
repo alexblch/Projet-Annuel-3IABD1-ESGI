@@ -209,20 +209,20 @@ extern "C"
         
         for (int i = 0; i < neurons * size_image; i++)
         {
-            weight.push_back(float(dis(gen)));
+            weight.push_back(double(dis(gen)));
         }
         if (file.is_open())
             vectorinfile(file, weight);
         for (int i = 0; i < neurons * nbClass; i++)
         {
-            weight_output.push_back(float(dis(gen)));
+            weight_output.push_back(double(dis(gen)));
         }
         if (weight_outputfile.is_open())
             vectorinfile(weight_outputfile, weight_output);
         for (int i = 0; i < weight_matrix.rows(); i++)
         {
             for (int j = 0; j < weight_matrix.cols(); j++)
-                weight_matrix(i, j) = float(dis(gen));
+                weight_matrix(i, j) = double(dis(gen));
         }
         // stock in file
         if (weightfile.is_open())
@@ -248,7 +248,7 @@ extern "C"
         data_matrix.setConstant(bias);
         MatrixXd weight_matrix = MatrixXd::Zero(neurons * neurons, hidden_Layer - 1);
 
-        data = set_Data(data, size);
+        //data = set_Data(data, size);
 
         if (file_data_image.is_open())
             file_data(data, size, file_data_image);
@@ -361,7 +361,7 @@ extern "C"
         data_matrix.setConstant(bias);
         MatrixXd weight_matrix = MatrixXd::Zero(neurons * neurons, hidden_Layer - 1);
 
-        data = set_Data(data, size);
+        //data = set_Data(data, size);
 
         if (file_data_image.is_open())
             file_data(data, size, file_data_image);
@@ -457,24 +457,4 @@ extern "C"
         return out[0];
     }
 
-
-    double linear_model(double *data, double *weight, int size, int bias)
-    {
-        data = set_Data(data, size);
-        double sum = 0;
-        if (size == 0)
-            return 404;
-        sum += (double)bias;
-        for (int i = 0; i < size; i++)
-        {
-            sum += data[i] * weight[i];
-        }
-        sum = tanh(sum);
-        if (sum < -0.33)
-            return -1;
-        if (sum > -0.33 && sum < 0.33)
-            return 0;
-        else
-            return 1;
-    }
 }
